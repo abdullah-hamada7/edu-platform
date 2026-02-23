@@ -30,6 +30,9 @@ class EnrollmentPlaybackPolicyTest {
     private LessonRepository lessonRepository;
 
     @Mock
+    private ChapterRepository chapterRepository;
+
+    @Mock
     private PlaybackAccessGrantRepository grantRepository;
 
     @Mock
@@ -57,6 +60,7 @@ class EnrollmentPlaybackPolicyTest {
         playbackService = new StudentPlaybackService(
             enrollmentRepository,
             lessonRepository,
+            chapterRepository,
             grantRepository,
             signedUrlService,
             watermarkPolicyService
@@ -90,8 +94,14 @@ class EnrollmentPlaybackPolicyTest {
             .status(EnrollmentStatus.ACTIVE)
             .build();
 
+        Chapter chapter = Chapter.builder()
+            .id(chapterId)
+            .courseId(courseId)
+            .build();
+
         when(lessonRepository.findById(lessonId)).thenReturn(Optional.of(lesson));
-        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, chapterId, EnrollmentStatus.ACTIVE))
+        when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
+        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ACTIVE))
             .thenReturn(Optional.of(enrollment));
         when(grantRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         when(signedUrlService.generateSignedUrl(eq(videoAssetId), eq(studentId)))
@@ -117,8 +127,14 @@ class EnrollmentPlaybackPolicyTest {
             .position(0)
             .build();
 
+        Chapter chapter = Chapter.builder()
+            .id(chapterId)
+            .courseId(courseId)
+            .build();
+
         when(lessonRepository.findById(lessonId)).thenReturn(Optional.of(lesson));
-        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, chapterId, EnrollmentStatus.ACTIVE))
+        when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
+        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ACTIVE))
             .thenReturn(Optional.empty());
 
         assertThrows(EnrollmentRequiredException.class, () -> 
@@ -135,8 +151,14 @@ class EnrollmentPlaybackPolicyTest {
             .position(0)
             .build();
 
+        Chapter chapter = Chapter.builder()
+            .id(chapterId)
+            .courseId(courseId)
+            .build();
+
         when(lessonRepository.findById(lessonId)).thenReturn(Optional.of(lesson));
-        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, chapterId, EnrollmentStatus.ACTIVE))
+        when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
+        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ACTIVE))
             .thenReturn(Optional.empty());
 
         assertThrows(EnrollmentRequiredException.class, () -> 
@@ -159,8 +181,14 @@ class EnrollmentPlaybackPolicyTest {
             .status(EnrollmentStatus.ACTIVE)
             .build();
 
+        Chapter chapter = Chapter.builder()
+            .id(chapterId)
+            .courseId(courseId)
+            .build();
+
         when(lessonRepository.findById(lessonId)).thenReturn(Optional.of(lesson));
-        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, chapterId, EnrollmentStatus.ACTIVE))
+        when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
+        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ACTIVE))
             .thenReturn(Optional.of(enrollment));
 
         assertThrows(IllegalStateException.class, () -> 
@@ -183,8 +211,14 @@ class EnrollmentPlaybackPolicyTest {
             .status(EnrollmentStatus.ACTIVE)
             .build();
 
+        Chapter chapter = Chapter.builder()
+            .id(chapterId)
+            .courseId(courseId)
+            .build();
+
         when(lessonRepository.findById(lessonId)).thenReturn(Optional.of(lesson));
-        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, chapterId, EnrollmentStatus.ACTIVE))
+        when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
+        when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ACTIVE))
             .thenReturn(Optional.of(enrollment));
         when(grantRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         when(signedUrlService.generateSignedUrl(any(), any())).thenReturn("url");
