@@ -65,6 +65,15 @@ public class ApiExceptionHandler {
             .build());
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex) {
+        return ResponseEntity.badRequest().body(ErrorResponse.builder()
+            .timestamp(Instant.now())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .error(ex.getMessage())
+            .build());
+    }
+
     @ExceptionHandler(com.securemath.exception.ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(com.securemath.exception.ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder()

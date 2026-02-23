@@ -232,6 +232,18 @@ export default function AdminCourseDetailPage() {
     refreshQuizzes()
   }
 
+  const handlePublishCourse = async () => {
+    if (!courseId) return
+    await api.post(`/admin/courses/${courseId}/publish`)
+    refreshCourse()
+  }
+
+  const handleArchiveCourse = async () => {
+    if (!courseId) return
+    await api.post(`/admin/courses/${courseId}/archive`)
+    refreshCourse()
+  }
+
   const handleUploadVideo = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!uploadFile) return
@@ -286,7 +298,25 @@ export default function AdminCourseDetailPage() {
             </h1>
             <p className="text-slate-400 max-w-2xl">{course.description || 'No description provided for this curriculum.'}</p>
           </div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Status: {course.status}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Status: {course.status}</span>
+            {course.status !== 'PUBLISHED' && (
+              <button
+                onClick={handlePublishCourse}
+                className="px-3 py-1.5 rounded-lg bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest"
+              >
+                Publish
+              </button>
+            )}
+            {course.status !== 'ARCHIVED' && (
+              <button
+                onClick={handleArchiveCourse}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-[10px] font-black uppercase tracking-widest"
+              >
+                Archive
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

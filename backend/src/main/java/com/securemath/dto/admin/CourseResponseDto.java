@@ -18,6 +18,7 @@ public class CourseResponseDto {
     private String title;
     private String description;
     private String status;
+    private Integer chaptersCount;
     private Instant createdAt;
     private Instant updatedAt;
 }

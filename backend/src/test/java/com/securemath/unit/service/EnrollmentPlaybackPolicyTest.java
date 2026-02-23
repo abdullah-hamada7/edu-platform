@@ -103,8 +103,14 @@ class EnrollmentPlaybackPolicyTest {
             .courseId(courseId)
             .build();
 
+        VideoAsset videoAsset = VideoAsset.builder()
+            .id(videoAssetId)
+            .transcodeStatus(TranscodeStatus.READY)
+            .build();
+
         when(lessonRepository.findById(lessonId)).thenReturn(Optional.of(lesson));
         when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
+        when(videoAssetRepository.findById(videoAssetId)).thenReturn(Optional.of(videoAsset));
         when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ACTIVE))
             .thenReturn(Optional.of(enrollment));
         when(grantRepository.save(any())).thenAnswer(i -> i.getArgument(0));
@@ -220,8 +226,14 @@ class EnrollmentPlaybackPolicyTest {
             .courseId(courseId)
             .build();
 
+        VideoAsset videoAsset = VideoAsset.builder()
+            .id(videoAssetId)
+            .transcodeStatus(TranscodeStatus.READY)
+            .build();
+
         when(lessonRepository.findById(lessonId)).thenReturn(Optional.of(lesson));
         when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
+        when(videoAssetRepository.findById(videoAssetId)).thenReturn(Optional.of(videoAsset));
         when(enrollmentRepository.findByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ACTIVE))
             .thenReturn(Optional.of(enrollment));
         when(grantRepository.save(any())).thenAnswer(i -> i.getArgument(0));

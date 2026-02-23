@@ -122,11 +122,13 @@ public class AdminCourseService {
     }
 
     private CourseResponseDto toResponseDto(Course course) {
+        int chaptersCount = (int) chapterRepository.countByCourseId(course.getId());
         return CourseResponseDto.builder()
             .id(course.getId())
             .title(course.getTitle())
             .description(course.getDescription())
             .status(course.getStatus().name())
+            .chaptersCount(chaptersCount)
             .createdAt(course.getCreatedAt())
             .updatedAt(course.getUpdatedAt())
             .build();
