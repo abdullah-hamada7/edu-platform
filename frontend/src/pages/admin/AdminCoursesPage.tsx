@@ -3,13 +3,12 @@ import api from '../../services/api'
 import {
     Plus,
     Search,
-    MoreVertical,
     BookOpen,
     Layers,
     ChevronRight,
     Filter
 } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 interface Course {
     id: string
@@ -28,11 +27,16 @@ export default function AdminCoursesPage() {
     const [description, setDescription] = useState('')
     const [creating, setCreating] = useState(false)
     const [statusFilter, setStatusFilter] = useState('ALL')
+    const [error, setError] = useState<string | null>(null)
+    const navigate = useNavigate()
 
     useEffect(() => {
         api.get<Course[]>('/admin/courses')
             .then(res => setCourses(res.data))
-            .catch(err => console.error('Failed to fetch admin courses:', err))
+            .catch(err => {
+                console.error('Failed to fetch admin courses:', err)
+                setError(err.response?.data?.error || 'Failed to load courses.')
+            })
             .finally(() => setLoading(false))
     }, [])
 
@@ -47,8 +51,10 @@ export default function AdminCoursesPage() {
             setTitle('')
             setDescription('')
             setShowCreate(false)
+            setError(null)
         } catch (err) {
             console.error('Failed to create course:', err)
+            setError(err.response?.data?.error || 'Failed to create course.')
         } finally {
             setCreating(false)
         }
@@ -129,6 +135,12 @@ export default function AdminCoursesPage() {
                 </form>
             )}
 
+            {error && (
+                <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-2xl p-4">
+                    {error}
+                </div>
+            )}
+
             {/* Control Bar */}
             <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-slate-900/40 border border-slate-800 p-4 rounded-2xl">
                 <div className="relative w-full sm:max-w-xs">
@@ -178,7 +190,11 @@ export default function AdminCoursesPage() {
                             </tr>
                         ) : (
                             filteredCourses.map((course) => (
-                                <tr key={course.id} className="group hover:bg-white/[0.02] transition-colors cursor-pointer">
+                                <tr
+                                    key={course.id}
+                                    onClick={() => navigate(`/admin/courses/${course.id}`)}
+                                    className="group hover:bg-white/[0.02] transition-colors cursor-pointer"
+                                >
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform">
@@ -203,12 +219,10 @@ export default function AdminCoursesPage() {
                                             <Link
                                                 to={`/admin/courses/${course.id}`}
                                                 className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-white hover:bg-slate-700 transition-all"
+                                                onClick={(event) => event.stopPropagation()}
                                             >
                                                 <ChevronRight size={18} />
                                             </Link>
-                                            <button className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all">
-                                                <MoreVertical size={18} />
-                                            </button>
                                         </div>
                                     </td>
                                 </tr>

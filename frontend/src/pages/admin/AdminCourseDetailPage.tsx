@@ -67,6 +67,7 @@ export default function AdminCourseDetailPage() {
   const [quizzes, setQuizzes] = useState<QuizSummary[]>([])
   const [videoAssets, setVideoAssets] = useState<VideoAsset[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const [chapterTitle, setChapterTitle] = useState('')
   const [chapterPosition, setChapterPosition] = useState('')
@@ -108,6 +109,11 @@ export default function AdminCourseDetailPage() {
         setStudents(usersRes.data.filter(u => u.role === 'STUDENT'))
         setQuizzes(quizzesRes.data)
         setVideoAssets(videosRes.data)
+        setError(null)
+      })
+      .catch((err) => {
+        console.error('Failed to load course detail:', err)
+        setError(err.response?.data?.error || 'Failed to load course detail.')
       })
       .finally(() => setLoading(false))
   }, [courseId])
@@ -139,54 +145,78 @@ export default function AdminCourseDetailPage() {
     event.preventDefault()
     if (!courseId || !chapterTitle.trim()) return
 
-    await api.post(`/admin/courses/${courseId}/chapters`, {
-      title: chapterTitle,
-      position: chapterPosition ? Number(chapterPosition) : undefined,
-    })
-    setChapterTitle('')
-    setChapterPosition('')
-    refreshCourse()
+    try {
+      await api.post(`/admin/courses/${courseId}/chapters`, {
+        title: chapterTitle,
+        position: chapterPosition ? Number(chapterPosition) : undefined,
+      })
+      setChapterTitle('')
+      setChapterPosition('')
+      setError(null)
+      refreshCourse()
+    } catch (err: any) {
+      console.error('Failed to create chapter:', err)
+      setError(err.response?.data?.error || 'Failed to create chapter.')
+    }
   }
 
   const handleCreateLesson = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!activeChapterId || !lessonTitle.trim()) return
 
-    await api.post(`/admin/courses/chapters/${activeChapterId}/lessons`, {
-      title: lessonTitle,
-      position: lessonPosition ? Number(lessonPosition) : undefined,
-      videoAssetId: lessonVideoAssetId || undefined,
-    })
-    setLessonTitle('')
-    setLessonPosition('')
-    setLessonVideoAssetId('')
-    setActiveChapterId(null)
-    refreshCourse()
+    try {
+      await api.post(`/admin/courses/chapters/${activeChapterId}/lessons`, {
+        title: lessonTitle,
+        position: lessonPosition ? Number(lessonPosition) : undefined,
+        videoAssetId: lessonVideoAssetId || undefined,
+      })
+      setLessonTitle('')
+      setLessonPosition('')
+      setLessonVideoAssetId('')
+      setActiveChapterId(null)
+      setError(null)
+      refreshCourse()
+    } catch (err: any) {
+      console.error('Failed to create lesson:', err)
+      setError(err.response?.data?.error || 'Failed to create lesson.')
+    }
   }
 
   const handleEnrollStudent = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!courseId || !selectedStudentId) return
 
-    await api.post(`/admin/courses/${courseId}/enrollments`, {
-      studentId: selectedStudentId,
-    })
-    setSelectedStudentId('')
-    refreshEnrollments()
+    try {
+      await api.post(`/admin/courses/${courseId}/enrollments`, {
+        studentId: selectedStudentId,
+      })
+      setSelectedStudentId('')
+      setError(null)
+      refreshEnrollments()
+    } catch (err: any) {
+      console.error('Failed to enroll student:', err)
+      setError(err.response?.data?.error || 'Failed to enroll student.')
+    }
   }
 
   const handleCreateQuiz = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!courseId || !quizTitle.trim()) return
 
-    await api.post(`/admin/courses/${courseId}/quizzes`, {
-      title: quizTitle,
-      timeLimitSeconds: quizTimeLimit ? Number(quizTimeLimit) : undefined,
-      status: 'DRAFT',
-    })
-    setQuizTitle('')
-    setQuizTimeLimit('')
-    refreshQuizzes()
+    try {
+      await api.post(`/admin/courses/${courseId}/quizzes`, {
+        title: quizTitle,
+        timeLimitSeconds: quizTimeLimit ? Number(quizTimeLimit) : undefined,
+        status: 'DRAFT',
+      })
+      setQuizTitle('')
+      setQuizTimeLimit('')
+      setError(null)
+      refreshQuizzes()
+    } catch (err: any) {
+      console.error('Failed to create quiz:', err)
+      setError(err.response?.data?.error || 'Failed to create quiz.')
+    }
   }
 
   const buildAnswerKey = () => {
@@ -210,38 +240,60 @@ export default function AdminCourseDetailPage() {
     event.preventDefault()
     if (!selectedQuizId || !questionPrompt.trim()) return
 
-    await api.post(`/admin/quizzes/${selectedQuizId}/questions`, {
-      type: questionType,
-      promptText: questionPrompt,
-      latexEnabled,
-      answerKey: buildAnswerKey(),
-      points: Number(questionPoints),
-      position: questionPosition ? Number(questionPosition) : undefined,
-    })
-    setQuestionPrompt('')
-    setQuestionPoints('1')
-    setQuestionPosition('')
-    setMcqOptions('')
-    setMcqCorrectIndex('0')
-    setNumericValue('')
-    setNumericTolerance('0.01')
+    try {
+      await api.post(`/admin/quizzes/${selectedQuizId}/questions`, {
+        type: questionType,
+        promptText: questionPrompt,
+        latexEnabled,
+        answerKey: buildAnswerKey(),
+        points: Number(questionPoints),
+        position: questionPosition ? Number(questionPosition) : undefined,
+      })
+      setQuestionPrompt('')
+      setQuestionPoints('1')
+      setQuestionPosition('')
+      setMcqOptions('')
+      setMcqCorrectIndex('0')
+      setNumericValue('')
+      setNumericTolerance('0.01')
+      setError(null)
+    } catch (err: any) {
+      console.error('Failed to add question:', err)
+      setError(err.response?.data?.error || 'Failed to add question.')
+    }
   }
 
   const handlePublishQuiz = async (quizId: string) => {
-    await api.post(`/admin/quizzes/${quizId}/publish`)
-    refreshQuizzes()
+    try {
+      await api.post(`/admin/quizzes/${quizId}/publish`)
+      setError(null)
+      refreshQuizzes()
+    } catch (err: any) {
+      console.error('Failed to publish quiz:', err)
+      setError(err.response?.data?.error || 'Failed to publish quiz.')
+    }
   }
 
   const handlePublishCourse = async () => {
     if (!courseId) return
-    await api.post(`/admin/courses/${courseId}/publish`)
-    refreshCourse()
+    try {
+      await api.post(`/admin/courses/${courseId}/publish`)
+      refreshCourse()
+    } catch (err: any) {
+      console.error('Failed to publish course:', err)
+      setError(err.response?.data?.error || 'Failed to publish course.')
+    }
   }
 
   const handleArchiveCourse = async () => {
     if (!courseId) return
-    await api.post(`/admin/courses/${courseId}/archive`)
-    refreshCourse()
+    try {
+      await api.post(`/admin/courses/${courseId}/archive`)
+      refreshCourse()
+    } catch (err: any) {
+      console.error('Failed to archive course:', err)
+      setError(err.response?.data?.error || 'Failed to archive course.')
+    }
   }
 
   const handleUploadVideo = async (event: React.FormEvent) => {
@@ -252,18 +304,28 @@ export default function AdminCourseDetailPage() {
     try {
       setUploading(true)
       await api.post('/admin/videos/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {},
       })
       setUploadFile(null)
+      setError(null)
       refreshVideoAssets()
+    } catch (err: any) {
+      console.error('Failed to upload video:', err)
+      setError(err.response?.data?.error || 'Failed to upload video.')
     } finally {
       setUploading(false)
     }
   }
 
   const handleRefreshVideo = async (assetId: string) => {
-    await api.post(`/admin/videos/${assetId}/refresh`)
-    refreshVideoAssets()
+    try {
+      await api.post(`/admin/videos/${assetId}/refresh`)
+      setError(null)
+      refreshVideoAssets()
+    } catch (err: any) {
+      console.error('Failed to refresh video asset:', err)
+      setError(err.response?.data?.error || 'Failed to refresh video asset.')
+    }
   }
 
   if (loading) {
@@ -319,6 +381,12 @@ export default function AdminCourseDetailPage() {
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-2xl p-4">
+          {error}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-6">

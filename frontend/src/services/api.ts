@@ -4,19 +4,48 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api'
 
 const api = axios.create({
   baseURL: API_BASE,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 })
 
 api.interceptors.request.use((config) => {
+  const ensureFingerprint = () => {
+    const existing = localStorage.getItem('deviceFingerprint')
+    if (existing) return existing
+    if (typeof navigator === 'undefined' || typeof screen === 'undefined') return null
+    const components = [
+      navigator.userAgent,
+      navigator.language,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset().toString(),
+    ]
+    const fingerprint = btoa(components.join('|')).slice(0, 32)
+    localStorage.setItem('deviceFingerprint', fingerprint)
+    return fingerprint
+  }
+
+  const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData
+  if (!isFormData) {
+    if (config.headers && 'set' in config.headers) {
+      config.headers.set('Content-Type', 'application/json')
+    } else {
+      config.headers = { ...(config.headers || {}), 'Content-Type': 'application/json' }
+    }
+  }
+
   const token = localStorage.getItem('accessToken')
   if (token) {
-    config.headers.set('Authorization', `Bearer ${token}`)
+    if (config.headers && 'set' in config.headers) {
+      config.headers.set('Authorization', `Bearer ${token}`)
+    } else {
+      config.headers = { ...(config.headers || {}), Authorization: `Bearer ${token}` }
+    }
   }
-  const fingerprint = localStorage.getItem('deviceFingerprint')
+  const fingerprint = ensureFingerprint()
   if (fingerprint) {
-    config.headers.set('X-Device-Fingerprint', fingerprint)
+    if (config.headers && 'set' in config.headers) {
+      config.headers.set('X-Device-Fingerprint', fingerprint)
+    } else {
+      config.headers = { ...(config.headers || {}), 'X-Device-Fingerprint': fingerprint }
+    }
   }
   return config
 })

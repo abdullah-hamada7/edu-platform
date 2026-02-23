@@ -302,7 +302,7 @@ export default function AdminUsersPage() {
                             </tr>
                         ) : (
                             filteredUsers.map((user) => (
-                                <tr key={user.id} className="group hover:bg-white/[0.02] transition-colors cursor-pointer">
+                                <tr key={user.id} className="group hover:bg-white/[0.02] transition-colors">
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-full bg-slate-800/80 text-primary flex items-center justify-center border border-slate-700 group-hover:ring-2 group-hover:ring-primary/20 transition-all font-bold">
@@ -348,12 +348,14 @@ export default function AdminUsersPage() {
                                             >
                                                 <Ban size={18} />
                                             </button>
-                                            <Link
-                                                to="/admin/courses"
+                                            <button
+                                                type="button"
                                                 className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-white hover:bg-slate-700 transition-all"
+                                                onClick={(event) => event.preventDefault()}
+                                                title="No additional actions"
                                             >
                                                 <MoreVertical size={18} />
-                                            </Link>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
