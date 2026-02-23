@@ -12,11 +12,11 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken')
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.set('Authorization', `Bearer ${token}`)
   }
   const fingerprint = localStorage.getItem('deviceFingerprint')
   if (fingerprint) {
-    config.headers['X-Device-Fingerprint'] = fingerprint
+    config.headers.set('X-Device-Fingerprint', fingerprint)
   }
   return config
 })

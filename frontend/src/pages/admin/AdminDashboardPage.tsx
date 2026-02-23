@@ -49,9 +49,9 @@ export default function AdminDashboardPage() {
   }
 
   const stats = [
-    { label: 'Total Students', value: data?.totalStudents.toLocaleString() || '0', icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-    { label: 'Active Courses', value: data?.activeCourses.toString() || '0', icon: BookOpen, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-    { label: 'Examinations', value: data?.totalExaminations.toString() || '0', icon: BarChart3, color: 'text-amber-500', bg: 'bg-amber-400/10' },
+    { label: 'Total Students', value: (data?.totalStudents || 0).toLocaleString(), icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+    { label: 'Active Courses', value: (data?.activeCourses || 0).toString(), icon: BookOpen, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+    { label: 'Examinations', value: (data?.totalExaminations || 0).toString(), icon: BarChart3, color: 'text-amber-500', bg: 'bg-amber-400/10' },
     { label: 'System Status', value: data?.systemStatus || 'Unknown', icon: ShieldCheck, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
   ]
 
