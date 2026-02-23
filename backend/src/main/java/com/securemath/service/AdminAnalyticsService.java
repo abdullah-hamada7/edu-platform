@@ -25,7 +25,7 @@ public class AdminAnalyticsService {
 
         List<QuizAttempt> allAttempts = quizAttemptRepository.findAll();
         double avgPerformance = allAttempts.stream()
-            .mapToDouble(a -> (double) a.getScore() / a.getMaxScore())
+            .mapToDouble(a -> a.getScore().doubleValue() / a.getMaxScore().doubleValue())
             .average()
             .orElse(0.0) * 100;
 

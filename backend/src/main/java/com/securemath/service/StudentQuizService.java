@@ -88,13 +88,13 @@ public class StudentQuizService {
         List<GradeRecordDto> grades = getStudentGrades(studentId);
         
         double avgScore = grades.stream()
-            .mapToDouble(g -> (double) g.getScore() / g.getMaxScore())
+            .mapToDouble(g -> g.getScore().doubleValue() / g.getMaxScore().doubleValue())
             .average()
             .orElse(0.0) * 100;
 
         // Calculate weekly progress (quizzes in last 7 days / goal of 5)
         long recentQuizzes = grades.stream()
-            .filter(g -> g.getSubmittedAt().isAfter(java.time.Instant.now().minus(7, java.time.chrono.ChronoUnit.DAYS)))
+            .filter(g -> g.getSubmittedAt().isAfter(java.time.Instant.now().minus(7, java.time.temporal.ChronoUnit.DAYS)))
             .count();
         int progress = (int) Math.min(100, (recentQuizzes * 100) / 5);
 
