@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 
@@ -29,8 +30,8 @@ public class QuizGradingService {
         Map<UUID, Question> questionMap = new HashMap<>();
         questions.forEach(q -> questionMap.put(q.getId(), q));
 
-        double totalScore = 0;
-        double maxScore = 0;
+        BigDecimal totalScore = BigDecimal.ZERO;
+        BigDecimal maxScore = BigDecimal.ZERO;
         List<GradedAnswer> gradedAnswers = new ArrayList<>();
 
         for (QuizSubmissionRequestDto.AnswerDto answer : answers) {
@@ -39,10 +40,10 @@ public class QuizGradingService {
                 continue;
             }
 
-            maxScore += question.getPoints();
+            maxScore = maxScore.add(question.getPoints());
             boolean isCorrect = evaluateAnswer(question, answer.getResponse());
-            double awardedPoints = isCorrect ? question.getPoints() : 0;
-            totalScore += awardedPoints;
+            BigDecimal awardedPoints = isCorrect ? question.getPoints() : BigDecimal.ZERO;
+            totalScore = totalScore.add(awardedPoints);
 
             gradedAnswers.add(new GradedAnswer(
                 question.getId(),
@@ -99,8 +100,8 @@ public class QuizGradingService {
     }
 
     public record GradingResult(
-        double score,
-        double maxScore,
+        BigDecimal score,
+        BigDecimal maxScore,
         int gradingLatencyMs,
         List<GradedAnswer> answers
     ) {}
@@ -109,6 +110,7 @@ public class QuizGradingService {
         UUID questionId,
         String responseValue,
         boolean isCorrect,
-        double awardedPoints
+        BigDecimal awardedPoints
     ) {}
 }
+

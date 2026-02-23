@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
@@ -17,7 +18,7 @@ public class QuestionResponseDto {
     private String type;
     private String promptText;
     private Boolean latexEnabled;
-    private Double points;
+    private BigDecimal points;
     private Integer position;
     private McqOptions mcqOptions;
     

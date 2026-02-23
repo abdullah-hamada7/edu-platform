@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class QuizSubmissionResponseDto {
     
     private UUID attemptId;
-    private Double score;
-    private Double maxScore;
+    private BigDecimal score;
+    private BigDecimal maxScore;
     private Integer gradingLatencyMs;
 }
