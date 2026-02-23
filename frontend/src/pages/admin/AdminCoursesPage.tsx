@@ -1,3 +1,4 @@
+```javascript
 import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import {
@@ -6,7 +7,6 @@ import {
     MoreVertical,
     BookOpen,
     Layers,
-    Settings,
     ChevronRight,
     Filter
 } from 'lucide-react'
@@ -18,6 +18,7 @@ interface Course {
     title: string
     description?: string
     chaptersCount?: number
+    status?: string
 }
 
 export default function AdminCoursesPage() {
@@ -28,6 +29,7 @@ export default function AdminCoursesPage() {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [creating, setCreating] = useState(false)
+    const [statusFilter, setStatusFilter] = useState('ALL')
 
     useEffect(() => {
         api.get<Course[]>('/admin/courses')
@@ -54,9 +56,11 @@ export default function AdminCoursesPage() {
         }
     }
 
-    const filteredCourses = courses.filter(c =>
-        c.title.toLowerCase().includes(search.toLowerCase())
-    )
+    const filteredCourses = courses.filter(c => {
+        const matchesSearch = c.title.toLowerCase().includes(search.toLowerCase())
+        const matchesStatus = statusFilter === 'ALL' || c.status === statusFilter
+        return matchesSearch && matchesStatus
+    })
 
     if (loading) {
         return (
@@ -140,9 +144,19 @@ export default function AdminCoursesPage() {
                     />
                 </div>
                 <div className="flex items-center gap-2">
-                    <button className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition-colors border border-slate-700">
-                        <Filter size={18} />
-                    </button>
+                    <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2">
+                        <Filter size={16} className="text-slate-500" />
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="bg-transparent text-xs font-bold text-slate-300 uppercase tracking-widest focus:outline-none"
+                        >
+                            <option value="ALL">All Status</option>
+                            <option value="PUBLISHED">Published</option>
+                            <option value="DRAFT">Draft</option>
+                            <option value="ARCHIVED">Archived</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -189,7 +203,7 @@ export default function AdminCoursesPage() {
                                     <td className="px-6 py-5 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <Link
-                                                to={`/admin/courses/${course.id}`}
+                                                to={`/ admin / courses / ${ course.id } `}
                                                 className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-white hover:bg-slate-700 transition-all"
                                             >
                                                 <ChevronRight size={18} />
@@ -208,16 +222,7 @@ export default function AdminCoursesPage() {
 
             <div className="flex items-center justify-between px-4">
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Showing {filteredCourses.length} Curricula</p>
-                <div className="flex items-center gap-1">
-                    {[1, 2, 3].map(p => (
-                        <button key={p} className={cn(
-                            "w-8 h-8 rounded-lg text-xs font-bold transition-all border",
-                            p === 1 ? "bg-primary text-primary-foreground border-primary" : "bg-slate-800 text-slate-500 border-slate-700 hover:text-white"
-                        )}>
-                            {p}
-                        </button>
-                    ))}
-                </div>
+                <span className="text-[10px] font-bold text-slate-600">Page 1 of 1</span>
             </div>
         </div>
     )

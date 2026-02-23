@@ -102,12 +102,12 @@ export default function StudentCourseDetailPage() {
           <div className="space-y-4">
             {course.chapters.map((chapter, idx) => (
               <div key={chapter.id} className="bg-slate-900/40 border border-slate-800 rounded-3xl overflow-hidden">
-                <div className="px-6 py-4 bg-slate-800/30 border-b border-slate-800/50 flex items-center justify-between hover:bg-slate-800/50 transition-colors cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs font-bold text-primary bg-primary/10 w-8 h-8 rounded-lg flex items-center justify-center border border-primary/20">{idx + 1}</span>
-                    <h3 className="font-bold text-white group-hover:text-primary transition-colors">{chapter.title}</h3>
-                  </div>
-                  <span className="text-xs text-slate-500 font-medium">{chapter.lessons.length} lessons</span>
+                <div className="px-6 py-4 bg-slate-800/30 border-b border-slate-800/50 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <span className="text-xs font-bold text-primary bg-primary/10 w-8 h-8 rounded-lg flex items-center justify-center border border-primary/20">{idx + 1}</span>
+                        <h3 className="font-bold text-white">{chapter.title}</h3>
+                    </div>
+                    <span className="text-xs text-slate-500 font-medium">{chapter.lessons.length} lessons</span>
                 </div>
                 <div className="divide-y divide-slate-800/30">
                   {chapter.lessons.map((lesson) => (

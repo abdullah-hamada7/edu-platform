@@ -166,7 +166,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="p-4 rounded-2xl bg-slate-950/50 border border-slate-800 flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-300">Database Optimizer</span>
-              <button className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">Run Now</button>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Automated</span>
             </div>
             <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 flex items-center justify-between">
               <span className="text-xs font-semibold text-rose-200">2 Restricted Actions</span>
