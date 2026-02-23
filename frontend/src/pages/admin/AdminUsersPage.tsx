@@ -311,13 +311,15 @@ export default function AdminUsersPage() {
                                     </td>
                                     <td className="px-6 py-5 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button
-                                                onClick={() => setEnrollUser(user)}
-                                                className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all"
-                                                title="Enroll in Course"
-                                            >
-                                                <UserCheck size={18} />
-                                            </button>
+                                            {user.role === 'STUDENT' && (
+                                                <button
+                                                    onClick={() => setEnrollUser(user)}
+                                                    className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all"
+                                                    title="Enroll in Course"
+                                                >
+                                                    <UserCheck size={18} />
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => toggleStatus(user)}
                                                 className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
