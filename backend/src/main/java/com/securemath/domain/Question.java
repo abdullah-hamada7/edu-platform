@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ public class Question {
     private String answerKey;
 
     @Column(nullable = false)
-    private Double points;
+    private BigDecimal points;
 
     @Column(nullable = false)
     private Integer position;

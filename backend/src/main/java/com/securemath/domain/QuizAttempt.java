@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +41,10 @@ public class QuizAttempt {
     private Instant submittedAt;
 
     @Column(nullable = false)
-    private Double score;
+    private BigDecimal score;
 
     @Column(name = "max_score", nullable = false)
-    private Double maxScore;
+    private BigDecimal maxScore;
 
     @Column(name = "grading_latency_ms", nullable = false)
     private Integer gradingLatencyMs;

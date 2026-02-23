@@ -3,6 +3,7 @@ package com.securemath.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -39,5 +40,5 @@ public class Answer {
     private Boolean isCorrect;
 
     @Column(name = "awarded_points", nullable = false)
-    private Double awardedPoints;
+    private BigDecimal awardedPoints;
 }
