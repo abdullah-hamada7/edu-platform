@@ -52,7 +52,7 @@ export default function AdminCoursesPage() {
             setDescription('')
             setShowCreate(false)
             setError(null)
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to create course:', err)
             setError(err.response?.data?.error || 'Failed to create course.')
         } finally {

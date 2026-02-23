@@ -27,7 +27,7 @@ api.interceptors.request.use((config) => {
     if (config.headers && 'set' in config.headers) {
       config.headers.set('Content-Type', 'application/json')
     } else {
-      config.headers = { ...(config.headers || {}), 'Content-Type': 'application/json' }
+      config.headers = { ...(config.headers as any), 'Content-Type': 'application/json' }
     }
   }
 
@@ -36,7 +36,7 @@ api.interceptors.request.use((config) => {
     if (config.headers && 'set' in config.headers) {
       config.headers.set('Authorization', `Bearer ${token}`)
     } else {
-      config.headers = { ...(config.headers || {}), Authorization: `Bearer ${token}` }
+      config.headers = { ...(config.headers as any), Authorization: `Bearer ${token}` }
     }
   }
   const fingerprint = ensureFingerprint()
@@ -44,7 +44,7 @@ api.interceptors.request.use((config) => {
     if (config.headers && 'set' in config.headers) {
       config.headers.set('X-Device-Fingerprint', fingerprint)
     } else {
-      config.headers = { ...(config.headers || {}), 'X-Device-Fingerprint': fingerprint }
+      config.headers = { ...(config.headers as any), 'X-Device-Fingerprint': fingerprint }
     }
   }
   return config
@@ -101,7 +101,7 @@ export const authApi = {
     const response = await api.post('/auth/login', { email, password })
     return response.data
   },
-  
+
   changePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
     await api.post('/auth/change-password', {
       currentPassword,

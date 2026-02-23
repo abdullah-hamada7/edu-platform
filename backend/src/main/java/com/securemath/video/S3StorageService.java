@@ -18,10 +18,13 @@ public class S3StorageService {
 
     private final S3Client s3Client;
 
-    @Value("${aws.s3.bucket-name}")
+    @Value("${aws.s3.bucket-name:}")
     private String bucketName;
 
     public String uploadRawVideo(UUID assetId, InputStream inputStream, long contentLength, String contentType) {
+        if (bucketName == null || bucketName.isBlank()) {
+            throw new IllegalStateException("S3 bucket is not configured");
+        }
         String key = "raw/" + assetId + "/source.mp4";
         
         PutObjectRequest request = PutObjectRequest.builder()
@@ -41,6 +44,9 @@ public class S3StorageService {
     }
 
     public boolean objectExists(String key) {
+        if (bucketName == null || bucketName.isBlank()) {
+            return false;
+        }
         try {
             HeadObjectRequest request = HeadObjectRequest.builder()
                 .bucket(bucketName)

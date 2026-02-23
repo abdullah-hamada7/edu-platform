@@ -39,7 +39,7 @@ public class SignedUrlService {
 
         URL signedUrl = s3Presigner.presignGetObject(presignRequest).url();
         log.debug("Generated signed URL for asset {} for student {}", assetId, studentId);
-        
+
         return signedUrl.toString();
     }
 
