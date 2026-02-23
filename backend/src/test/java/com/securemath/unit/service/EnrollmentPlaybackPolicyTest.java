@@ -33,6 +33,9 @@ class EnrollmentPlaybackPolicyTest {
     private ChapterRepository chapterRepository;
 
     @Mock
+    private VideoAssetRepository videoAssetRepository;
+
+    @Mock
     private PlaybackAccessGrantRepository grantRepository;
 
     @Mock
@@ -61,6 +64,7 @@ class EnrollmentPlaybackPolicyTest {
             enrollmentRepository,
             lessonRepository,
             chapterRepository,
+            videoAssetRepository,
             grantRepository,
             signedUrlService,
             watermarkPolicyService
