@@ -4,6 +4,49 @@ import { authApi } from '../services/api'
 import { LogIn, Lock, Mail, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react'
 import { cn } from '../lib/utils'
 
+const InputField = ({
+  label,
+  icon: Icon,
+  ...props
+}: {
+  label: string,
+  icon: any
+} & React.InputHTMLAttributes<HTMLInputElement>) => (
+  <div className="space-y-1.5">
+    <label className="text-sm font-medium text-slate-200 ml-1">{label}</label>
+    <div className="relative group">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+        <Icon size={18} />
+      </div>
+      <input
+        {...props}
+        className={cn(
+          "w-full bg-slate-900/50 border border-slate-700/50 rounded-xl py-2.5 pl-10 pr-4",
+          "text-slate-100 placeholder:text-slate-500",
+          "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all",
+          "disabled:opacity-50 disabled:cursor-not-allowed",
+          props.className
+        )}
+      />
+    </div>
+  </div>
+)
+
+const AuthButton = ({ children, loading, ...props }: any) => (
+  <button
+    {...props}
+    disabled={loading || props.disabled}
+    className={cn(
+      "w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded-xl",
+      "flex items-center justify-center gap-2 transition-all active:scale-[0.98]",
+      "disabled:opacity-50 disabled:active:scale-100 disabled:cursor-not-allowed shadow-lg shadow-primary/20",
+      props.className
+    )}
+  >
+    {loading ? <Loader2 className="animate-spin" size={20} /> : children}
+  </button>
+)
+
 export default function LoginPage() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -58,49 +101,6 @@ export default function LoginPage() {
       setLoading(false)
     }
   }
-
-  const InputField = ({
-    label,
-    icon: Icon,
-    ...props
-  }: {
-    label: string,
-    icon: any
-  } & React.InputHTMLAttributes<HTMLInputElement>) => (
-    <div className="space-y-1.5">
-      <label className="text-sm font-medium text-slate-200 ml-1">{label}</label>
-      <div className="relative group">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
-          <Icon size={18} />
-        </div>
-        <input
-          {...props}
-          className={cn(
-            "w-full bg-slate-900/50 border border-slate-700/50 rounded-xl py-2.5 pl-10 pr-4",
-            "text-slate-100 placeholder:text-slate-500",
-            "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            props.className
-          )}
-        />
-      </div>
-    </div>
-  )
-
-  const AuthButton = ({ children, loading, ...props }: any) => (
-    <button
-      {...props}
-      disabled={loading || props.disabled}
-      className={cn(
-        "w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded-xl",
-        "flex items-center justify-center gap-2 transition-all active:scale-[0.98]",
-        "disabled:opacity-50 disabled:active:scale-100 disabled:cursor-not-allowed shadow-lg shadow-primary/20",
-        props.className
-      )}
-    >
-      {loading ? <Loader2 className="animate-spin" size={20} /> : children}
-    </button>
-  )
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 relative overflow-hidden">
