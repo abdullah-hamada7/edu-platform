@@ -26,6 +26,14 @@ public class StudentQuizController {
         return ResponseEntity.ok(studentQuizService.getQuizForStudent(quizId, studentId));
     }
 
+    @GetMapping
+    public ResponseEntity<List<QuizSummaryDto>> listQuizzesForCourse(
+            @RequestParam UUID courseId,
+            @AuthenticationPrincipal String userId) {
+        UUID studentId = UUID.fromString(userId);
+        return ResponseEntity.ok(studentQuizService.listQuizzesForCourse(courseId, studentId));
+    }
+
     @PostMapping("/{quizId}/submit")
     public ResponseEntity<QuizSubmissionResponseDto> submitQuiz(
             @PathVariable UUID quizId,

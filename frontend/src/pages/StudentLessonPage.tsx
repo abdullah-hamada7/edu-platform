@@ -93,6 +93,8 @@ export default function StudentLessonPage() {
     )
   }
 
+  const quizLink = grant.courseId ? `/student/courses/${grant.courseId}` : '/student/courses'
+
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20">
       {/* Header */}
@@ -143,9 +145,12 @@ export default function StudentLessonPage() {
         <div className="bg-primary/10 border border-primary/20 p-8 rounded-3xl flex flex-col justify-center items-center text-center space-y-4">
           <p className="text-xs font-bold text-primary uppercase tracking-widest">Next Step</p>
           <h3 className="text-lg font-bold text-white leading-tight">Test your understanding with a short quiz</h3>
-          <button className="w-full py-3 bg-primary text-primary-foreground font-black rounded-xl hover:opacity-90 transition-all shadow-lg shadow-primary/20">
-            Launch Quiz
-          </button>
+          <Link
+            to={quizLink}
+            className="w-full py-3 bg-primary text-primary-foreground font-black rounded-xl hover:opacity-90 transition-all shadow-lg shadow-primary/20 text-center"
+          >
+            View Course Quizzes
+          </Link>
         </div>
       </div>
     </div>

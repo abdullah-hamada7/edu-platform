@@ -2,6 +2,7 @@ package com.securemath.service;
 
 import com.securemath.domain.*;
 import com.securemath.dto.quiz.*;
+import com.securemath.exception.EnrollmentRequiredException;
 import com.securemath.exception.ResourceNotFoundException;
 import com.securemath.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -28,18 +29,44 @@ public class StudentQuizService {
         Quiz quiz = quizRepository.findById(quizId)
             .orElseThrow(() -> ResourceNotFoundException.of("Quiz", quizId));
 
+        if (quiz.getStatus() != QuizStatus.PUBLISHED) {
+            throw ResourceNotFoundException.of("Quiz", quizId);
+        }
+
         if (!enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(
                 studentId, quiz.getCourseId(), EnrollmentStatus.ACTIVE)) {
-            throw new IllegalStateException("Not enrolled in this course");
+            throw new EnrollmentRequiredException("Not enrolled in this course");
         }
 
         return toDetailDto(quiz);
+    }
+
+    public List<QuizSummaryDto> listQuizzesForCourse(UUID courseId, UUID studentId) {
+        if (!enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ACTIVE)) {
+            throw new EnrollmentRequiredException("Not enrolled in this course");
+        }
+
+        return quizRepository.findByCourseIdAndStatus(courseId, QuizStatus.PUBLISHED).stream()
+            .map(quiz -> QuizSummaryDto.builder()
+                .id(quiz.getId())
+                .title(quiz.getTitle())
+                .build())
+            .collect(Collectors.toList());
     }
 
     @Transactional
     public QuizSubmissionResponseDto submitQuiz(UUID quizId, UUID studentId, QuizSubmissionRequestDto request) {
         Quiz quiz = quizRepository.findById(quizId)
             .orElseThrow(() -> ResourceNotFoundException.of("Quiz", quizId));
+
+        if (quiz.getStatus() != QuizStatus.PUBLISHED) {
+            throw ResourceNotFoundException.of("Quiz", quizId);
+        }
+
+        if (!enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(
+                studentId, quiz.getCourseId(), EnrollmentStatus.ACTIVE)) {
+            throw new EnrollmentRequiredException("Not enrolled in this course");
+        }
 
         if (attemptRepository.existsByQuizIdAndStudentId(quizId, studentId)) {
             throw new IllegalStateException("Quiz already submitted");

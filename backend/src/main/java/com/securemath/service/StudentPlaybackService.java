@@ -20,6 +20,7 @@ public class StudentPlaybackService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final LessonRepository lessonRepository;
+    private final ChapterRepository chapterRepository;
     private final PlaybackAccessGrantRepository grantRepository;
     private final SignedUrlService signedUrlService;
     private final WatermarkPolicyService watermarkPolicyService;
@@ -58,15 +59,18 @@ public class StudentPlaybackService {
             .manifestUrl(manifestUrl)
             .expiresAt(grant.getExpiresAt())
             .watermarkSeed(watermarkSeed)
+            .courseId(courseId)
             .build();
     }
 
     private UUID getCourseIdForLesson(Lesson lesson) {
-        return lessonRepository.findById(lesson.getId())
-            .map(l -> {
-                if (l.getChapterId() == null) return null;
-                return l.getChapterId();
-            })
-            .orElse(null);
+        if (lesson.getChapterId() == null) {
+            throw new IllegalStateException("Lesson is missing chapter association");
+        }
+
+        Chapter chapter = chapterRepository.findById(lesson.getChapterId())
+            .orElseThrow(() -> ResourceNotFoundException.of("Chapter", lesson.getChapterId()));
+
+        return chapter.getCourseId();
     }
 }

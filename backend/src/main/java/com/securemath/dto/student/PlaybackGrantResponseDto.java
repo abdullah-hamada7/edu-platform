@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -16,4 +17,5 @@ public class PlaybackGrantResponseDto {
     private String manifestUrl;
     private Instant expiresAt;
     private String watermarkSeed;
+    private UUID courseId;
 }

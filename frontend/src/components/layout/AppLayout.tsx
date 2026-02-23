@@ -36,13 +36,29 @@ export default function AppLayout() {
 
     useEffect(() => {
         const role = localStorage.getItem('userRole')
+        const token = localStorage.getItem('accessToken')
         setUserRole(role)
+
+        if (!token || !role) {
+            navigate('/login', { replace: true })
+            return
+        }
+
+        if (location.pathname.startsWith('/admin') && role !== 'ADMIN') {
+            navigate('/student', { replace: true })
+            return
+        }
+
+        if (location.pathname.startsWith('/student') && role !== 'STUDENT') {
+            navigate('/admin/courses', { replace: true })
+            return
+        }
 
         // Close sidebar on mobile when navigating
         if (window.innerWidth < 768) {
             setIsSidebarOpen(false)
         }
-    }, [location.pathname])
+    }, [location.pathname, navigate])
 
     const handleLogout = () => {
         localStorage.removeItem('accessToken')

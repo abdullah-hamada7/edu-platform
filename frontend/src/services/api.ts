@@ -36,6 +36,7 @@ export interface PlaybackGrant {
   manifestUrl: string
   expiresAt: string
   watermarkSeed: string
+  courseId: string
 }
 
 export const playbackApi = {

@@ -101,4 +101,4 @@ jspm_packages/
 test-results/
 junit.xml
 
-.agent/
+.agents/
