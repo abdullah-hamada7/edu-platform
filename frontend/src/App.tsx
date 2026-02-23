@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import AdminCoursesPage from './pages/admin/AdminCoursesPage'
+import AdminCourseDetailPage from './pages/admin/AdminCourseDetailPage'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
 import StudentDashboardPage from './pages/StudentDashboardPage'
 import StudentLessonPage from './pages/StudentLessonPage'
@@ -21,6 +22,7 @@ function App() {
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboardPage />} />
         <Route path="/admin/courses" element={<AdminCoursesPage />} />
+        <Route path="/admin/courses/:courseId" element={<AdminCourseDetailPage />} />
         <Route path="/admin/users" element={<AdminUsersPage />} />
         <Route path="/admin/analytics" element={<Navigate to="/admin" replace />} />
 

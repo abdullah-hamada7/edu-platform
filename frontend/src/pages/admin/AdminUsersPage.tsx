@@ -18,12 +18,18 @@ interface User {
     email: string
     role: string
     status: string
+    mustChangePassword?: boolean
 }
 
 export default function AdminUsersPage() {
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
+    const [showCreate, setShowCreate] = useState(false)
+    const [email, setEmail] = useState('')
+    const [tempPassword, setTempPassword] = useState('')
+    const [role, setRole] = useState('STUDENT')
+    const [saving, setSaving] = useState(false)
 
     useEffect(() => {
         api.get<User[]>('/admin/users')
@@ -31,6 +37,45 @@ export default function AdminUsersPage() {
             .catch(err => console.error('Failed to fetch admin users:', err))
             .finally(() => setLoading(false))
     }, [])
+
+    const refreshUsers = () => {
+        api.get<User[]>('/admin/users')
+            .then(res => setUsers(res.data))
+            .catch(err => console.error('Failed to fetch admin users:', err))
+    }
+
+    const handleCreateUser = async (event: React.FormEvent) => {
+        event.preventDefault()
+        if (!email || !tempPassword) return
+
+        try {
+            setSaving(true)
+            await api.post('/admin/users', {
+                email,
+                temporaryPassword: tempPassword,
+                role,
+            })
+            setEmail('')
+            setTempPassword('')
+            setRole('STUDENT')
+            setShowCreate(false)
+            refreshUsers()
+        } catch (err) {
+            console.error('Failed to create user:', err)
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const toggleStatus = async (user: User) => {
+        const nextStatus = user.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'
+        try {
+            await api.patch(`/admin/users/${user.id}/status`, { status: nextStatus })
+            refreshUsers()
+        } catch (err) {
+            console.error('Failed to update status:', err)
+        }
+    }
 
     const filteredUsers = users.filter(u =>
         u.email.toLowerCase().includes(search.toLowerCase())
@@ -56,10 +101,66 @@ export default function AdminUsersPage() {
                     <h1 className="text-3xl font-extrabold text-white tracking-tight">User Access Control</h1>
                     <p className="text-slate-400">Manage student identities and administrative permissions.</p>
                 </div>
-                <button className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-black transition-all flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]">
+                <button
+                    onClick={() => setShowCreate((prev) => !prev)}
+                    className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-black transition-all flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                >
                     <UserPlus size={18} /> Provision New User
                 </button>
             </div>
+
+            {showCreate && (
+                <form
+                    onSubmit={handleCreateUser}
+                    className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Email</label>
+                            <input
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                type="email"
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                placeholder="student@securemath.local"
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Temporary Password</label>
+                            <input
+                                value={tempPassword}
+                                onChange={(e) => setTempPassword(e.target.value)}
+                                type="password"
+                                minLength={8}
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                placeholder="••••••••"
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Role</label>
+                            <select
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            >
+                                <option value="STUDENT">Student</option>
+                                <option value="ADMIN">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 disabled:opacity-60"
+                        >
+                            {saving ? 'Creating...' : 'Create User'}
+                        </button>
+                    </div>
+                </form>
+            )}
 
             {/* Control Bar */}
             <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-slate-900/40 border border-slate-800 p-4 rounded-2xl">
@@ -136,7 +237,11 @@ export default function AdminUsersPage() {
                                             <button className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all" title="Enroll in Course">
                                                 <UserCheck size={18} />
                                             </button>
-                                            <button className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all" title="Restrict Access">
+                                            <button
+                                                onClick={() => toggleStatus(user)}
+                                                className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                                                title="Restrict Access"
+                                            >
                                                 <Ban size={18} />
                                             </button>
                                             <button className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-white hover:bg-slate-700 transition-all">

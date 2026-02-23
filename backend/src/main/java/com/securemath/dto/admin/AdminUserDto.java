@@ -1,4 +1,4 @@
-package com.securemath.dto.quiz;
+package com.securemath.dto.admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +11,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class QuizSummaryDto {
+public class AdminUserDto {
 
     private UUID id;
-    private String title;
+    private String email;
+    private String role;
     private String status;
+    private Boolean mustChangePassword;
 }

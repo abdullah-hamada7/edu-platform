@@ -19,7 +19,7 @@ variable "environment" {
 variable "instance_type" {
   description = "EC2 instance type (t3.large is recommended to support PostgreSQL, Java, and Video processing for 500 concurrent users)"
   type        = string
-  default     = "t3.small"
+  default     = "c7i-flex.large"
 }
 
 variable "volume_size" {

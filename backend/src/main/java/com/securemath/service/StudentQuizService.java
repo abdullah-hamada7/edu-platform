@@ -1,5 +1,7 @@
 package com.securemath.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.securemath.domain.*;
 import com.securemath.dto.quiz.*;
 import com.securemath.exception.EnrollmentRequiredException;
@@ -24,6 +26,7 @@ public class StudentQuizService {
     private final AnswerRepository answerRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final QuizGradingService gradingService;
+    private final ObjectMapper objectMapper;
 
     public QuizDetailDto getQuizForStudent(UUID quizId, UUID studentId) {
         Quiz quiz = quizRepository.findById(quizId)
@@ -50,6 +53,7 @@ public class StudentQuizService {
             .map(quiz -> QuizSummaryDto.builder()
                 .id(quiz.getId())
                 .title(quiz.getTitle())
+                .status(quiz.getStatus().name())
                 .build())
             .collect(Collectors.toList());
     }
@@ -156,14 +160,31 @@ public class StudentQuizService {
     }
 
     private QuestionResponseDto toQuestionDto(Question q) {
-        return QuestionResponseDto.builder()
+        QuestionResponseDto.QuestionResponseDtoBuilder builder = QuestionResponseDto.builder()
             .id(q.getId())
             .type(q.getType().name())
             .promptText(q.getPromptText())
             .latexEnabled(q.getLatexEnabled())
             .points(q.getPoints())
-            .position(q.getPosition())
-            .build();
+            .position(q.getPosition());
+
+        if (q.getType() == QuestionType.MCQ) {
+            try {
+                JsonNode node = objectMapper.readTree(q.getAnswerKey());
+                JsonNode optionsNode = node.path("options");
+                if (optionsNode.isArray()) {
+                    String[] options = new String[optionsNode.size()];
+                    for (int i = 0; i < optionsNode.size(); i++) {
+                        options[i] = optionsNode.get(i).asText();
+                    }
+                    builder.mcqOptions(QuestionResponseDto.McqOptions.builder().options(options).build());
+                }
+            } catch (Exception ignored) {
+                // ignore malformed options; grading uses answer key separately
+            }
+        }
+
+        return builder.build();
     }
 
     private GradeRecordDto toGradeRecord(QuizAttempt attempt) {

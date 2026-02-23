@@ -21,6 +21,7 @@ public class StudentPlaybackService {
     private final EnrollmentRepository enrollmentRepository;
     private final LessonRepository lessonRepository;
     private final ChapterRepository chapterRepository;
+    private final VideoAssetRepository videoAssetRepository;
     private final PlaybackAccessGrantRepository grantRepository;
     private final SignedUrlService signedUrlService;
     private final WatermarkPolicyService watermarkPolicyService;
@@ -41,6 +42,13 @@ public class StudentPlaybackService {
 
         if (lesson.getVideoAssetId() == null) {
             throw new IllegalStateException("Lesson has no video content");
+        }
+
+        VideoAsset asset = videoAssetRepository.findById(lesson.getVideoAssetId())
+            .orElseThrow(() -> ResourceNotFoundException.of("VideoAsset", lesson.getVideoAssetId()));
+
+        if (asset.getTranscodeStatus() != TranscodeStatus.READY) {
+            throw new IllegalStateException("Video is not ready for playback yet");
         }
 
         PlaybackAccessGrant grant = PlaybackAccessGrant.builder()

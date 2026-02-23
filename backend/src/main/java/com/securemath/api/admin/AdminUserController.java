@@ -1,10 +1,10 @@
 package com.securemath.api.admin;
 
 import com.securemath.domain.AccountStatus;
-import com.securemath.domain.UserAccount;
 import com.securemath.dto.admin.AccountStatusDto;
-import com.securemath.exception.ResourceNotFoundException;
-import com.securemath.repository.UserAccountRepository;
+import com.securemath.dto.admin.AdminUserCreateDto;
+import com.securemath.dto.admin.AdminUserDto;
+import com.securemath.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,27 +19,27 @@ import jakarta.validation.Valid;
 @RequiredArgsConstructor
 public class AdminUserController {
 
-    private final UserAccountRepository userAccountRepository;
+    private final AdminUserService adminUserService;
 
     @GetMapping
-    public ResponseEntity<List<UserAccount>> listUsers() {
-        return ResponseEntity.ok(userAccountRepository.findAll());
+    public ResponseEntity<List<AdminUserDto>> listUsers() {
+        return ResponseEntity.ok(adminUserService.listUsers());
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserAccount> getUser(@PathVariable UUID userId) {
-        return ResponseEntity.ok(userAccountRepository.findById(userId)
-            .orElseThrow(() -> ResourceNotFoundException.of("User", userId)));
+    public ResponseEntity<AdminUserDto> getUser(@PathVariable UUID userId) {
+        return ResponseEntity.ok(adminUserService.getUser(userId));
+    }
+
+    @PostMapping
+    public ResponseEntity<AdminUserDto> createUser(@Valid @RequestBody AdminUserCreateDto dto) {
+        return ResponseEntity.ok(adminUserService.createUser(dto));
     }
 
     @PatchMapping("/{userId}/status")
-    public ResponseEntity<UserAccount> updateStatus(
+    public ResponseEntity<AdminUserDto> updateStatus(
             @PathVariable UUID userId,
             @Valid @RequestBody AccountStatusDto dto) {
-        UserAccount user = userAccountRepository.findById(userId)
-            .orElseThrow(() -> ResourceNotFoundException.of("User", userId));
-        
-        user.setStatus(AccountStatus.valueOf(dto.getStatus()));
-        return ResponseEntity.ok(userAccountRepository.save(user));
+        return ResponseEntity.ok(adminUserService.updateStatus(userId, AccountStatus.valueOf(dto.getStatus())));
     }
 }

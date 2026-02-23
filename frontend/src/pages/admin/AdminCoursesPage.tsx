@@ -24,6 +24,10 @@ export default function AdminCoursesPage() {
     const [courses, setCourses] = useState<Course[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
+    const [showCreate, setShowCreate] = useState(false)
+    const [title, setTitle] = useState('')
+    const [description, setDescription] = useState('')
+    const [creating, setCreating] = useState(false)
 
     useEffect(() => {
         api.get<Course[]>('/admin/courses')
@@ -31,6 +35,24 @@ export default function AdminCoursesPage() {
             .catch(err => console.error('Failed to fetch admin courses:', err))
             .finally(() => setLoading(false))
     }, [])
+
+    const handleCreateCourse = async (event: React.FormEvent) => {
+        event.preventDefault()
+        if (!title.trim()) return
+
+        try {
+            setCreating(true)
+            const response = await api.post<Course>('/admin/courses', { title, description })
+            setCourses(prev => [response.data, ...prev])
+            setTitle('')
+            setDescription('')
+            setShowCreate(false)
+        } catch (err) {
+            console.error('Failed to create course:', err)
+        } finally {
+            setCreating(false)
+        }
+    }
 
     const filteredCourses = courses.filter(c =>
         c.title.toLowerCase().includes(search.toLowerCase())
@@ -59,10 +81,51 @@ export default function AdminCoursesPage() {
                     <h1 className="text-3xl font-extrabold text-white tracking-tight">Course Management</h1>
                     <p className="text-slate-400">Architect curricula and manage lesson distributions.</p>
                 </div>
-                <button className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-black transition-all flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]">
+                <button
+                    onClick={() => setShowCreate((prev) => !prev)}
+                    className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-black transition-all flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                >
                     <Plus size={18} /> Create New Course
                 </button>
             </div>
+
+            {showCreate && (
+                <form
+                    onSubmit={handleCreateCourse}
+                    className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Course Title</label>
+                            <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                placeholder="Advanced Mathematics"
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Description</label>
+                            <input
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                placeholder="Course overview for students"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={creating}
+                            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 disabled:opacity-60"
+                        >
+                            {creating ? 'Creating...' : 'Create Course'}
+                        </button>
+                    </div>
+                </form>
+            )}
 
             {/* Control Bar */}
             <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-slate-900/40 border border-slate-800 p-4 rounded-2xl">
