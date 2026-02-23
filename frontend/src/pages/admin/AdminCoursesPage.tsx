@@ -1,4 +1,3 @@
-```javascript
 import { useEffect, useState } from 'react'
 import api from '../../services/api'
 import {
@@ -203,7 +202,7 @@ export default function AdminCoursesPage() {
                                     <td className="px-6 py-5 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <Link
-                                                to={`/ admin / courses / ${ course.id } `}
+                                                to={`/ admin / courses / ${course.id} `}
                                                 className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-white hover:bg-slate-700 transition-all"
                                             >
                                                 <ChevronRight size={18} />
