@@ -17,8 +17,6 @@ export default function WatermarkOverlay({ seed, userId }: WatermarkOverlayProps
   useEffect(() => {
     const calculatePosition = () => {
       const timestamp = Date.now()
-      const period = 30000
-      const offset = timestamp % period
       const quadrant = Math.floor((timestamp / 15000) % 4)
 
       const positions: Position[] = [

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { api } from '../services/api'
+import api from '../services/api'
 
 interface CourseDetail {
   id: string
@@ -75,7 +75,7 @@ export default function StudentCourseDetailPage() {
 
       <div className="bg-white rounded-lg shadow">
         <h2 className="text-lg font-semibold p-4 border-b">Content</h2>
-        
+
         {course.chapters.map(chapter => (
           <div key={chapter.id} className="border-b last:border-b-0">
             <div className="p-4 bg-gray-50 font-medium">

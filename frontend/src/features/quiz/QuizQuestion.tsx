@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import KatexQuestionRenderer from '../features/quiz/KatexQuestionRenderer'
+import KatexQuestionRenderer from './KatexQuestionRenderer'
 
 interface Question {
   id: string
@@ -32,8 +32,8 @@ export default function QuizQuestion({ question, answer, onAnswerChange }: QuizQ
         <span className="text-sm font-medium text-blue-600">{question.points} pts</span>
       </div>
 
-      <KatexQuestionRenderer 
-        text={question.promptText} 
+      <KatexQuestionRenderer
+        text={question.promptText}
         latexEnabled={question.latexEnabled}
         className="text-lg mb-4"
       />
@@ -41,13 +41,12 @@ export default function QuizQuestion({ question, answer, onAnswerChange }: QuizQ
       {question.type === 'MCQ' && question.mcqOptions && (
         <div className="space-y-2">
           {question.mcqOptions.map((option, index) => (
-            <label 
+            <label
               key={index}
-              className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                answer === String(index) 
-                  ? 'border-blue-500 bg-blue-50' 
-                  : 'hover:bg-gray-50'
-              }`}
+              className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${answer === String(index)
+                ? 'border-blue-500 bg-blue-50'
+                : 'hover:bg-gray-50'
+                }`}
             >
               <input
                 type="radio"
@@ -57,8 +56,8 @@ export default function QuizQuestion({ question, answer, onAnswerChange }: QuizQ
                 onChange={() => onAnswerChange(question.id, String(index))}
                 className="mr-3"
               />
-              <KatexQuestionRenderer 
-                text={option} 
+              <KatexQuestionRenderer
+                text={option}
                 latexEnabled={question.latexEnabled}
               />
             </label>
@@ -68,12 +67,11 @@ export default function QuizQuestion({ question, answer, onAnswerChange }: QuizQ
 
       {question.type === 'TRUE_FALSE' && (
         <div className="flex gap-4">
-          <label 
-            className={`flex-1 flex items-center justify-center p-4 border rounded-lg cursor-pointer transition-colors ${
-              answer === 'true' 
-                ? 'border-blue-500 bg-blue-50' 
-                : 'hover:bg-gray-50'
-            }`}
+          <label
+            className={`flex-1 flex items-center justify-center p-4 border rounded-lg cursor-pointer transition-colors ${answer === 'true'
+              ? 'border-blue-500 bg-blue-50'
+              : 'hover:bg-gray-50'
+              }`}
           >
             <input
               type="radio"
@@ -85,12 +83,11 @@ export default function QuizQuestion({ question, answer, onAnswerChange }: QuizQ
             />
             True
           </label>
-          <label 
-            className={`flex-1 flex items-center justify-center p-4 border rounded-lg cursor-pointer transition-colors ${
-              answer === 'false' 
-                ? 'border-blue-500 bg-blue-50' 
-                : 'hover:bg-gray-50'
-            }`}
+          <label
+            className={`flex-1 flex items-center justify-center p-4 border rounded-lg cursor-pointer transition-colors ${answer === 'false'
+              ? 'border-blue-500 bg-blue-50'
+              : 'hover:bg-gray-50'
+              }`}
           >
             <input
               type="radio"

@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import QuizQuestion from '../features/quiz/QuizQuestion'
-import { api } from '../services/api'
+import api from '../services/api'
 
 interface Question {
   id: string
@@ -21,15 +21,12 @@ interface Quiz {
   questions: Question[]
 }
 
-interface Answer {
-  questionId: string
-  response: string
-}
+
 
 export default function StudentQuizPage() {
   const { quizId } = useParams<{ quizId: string }>()
   const navigate = useNavigate()
-  
+
   const [quiz, setQuiz] = useState<Quiz | null>(null)
   const [answers, setAnswers] = useState<Map<string, string>>(new Map())
   const [loading, setLoading] = useState(true)
@@ -40,14 +37,16 @@ export default function StudentQuizPage() {
   useEffect(() => {
     if (!quizId) return
 
-    api.get(`/student/quizzes/${quizId}`)
-      .then(res => {
+    api.get<Quiz>(`/student/quizzes/${quizId}`)
+      .then((res) => {
         setQuiz(res.data)
         if (res.data.timeLimitSeconds) {
           setTimeRemaining(res.data.timeLimitSeconds)
         }
       })
-      .catch(err => setError(err.response?.data?.error || 'Failed to load quiz'))
+      .catch((err: { response?: { data?: { error?: string } } }) =>
+        setError(err.response?.data?.error || 'Failed to load quiz')
+      )
       .finally(() => setLoading(false))
   }, [quizId])
 
@@ -79,7 +78,7 @@ export default function StudentQuizPage() {
     if (!quizId || submitting) return
 
     setSubmitting(true)
-    
+
     const answersList = Array.from(answers.entries()).map(([questionId, response]) => ({
       questionId,
       response,
@@ -89,12 +88,12 @@ export default function StudentQuizPage() {
       const response = await api.post(`/student/quizzes/${quizId}/submit`, {
         answers: answersList,
       })
-      
-      navigate('/student/grades', { 
-        state: { 
+
+      navigate('/student/grades', {
+        state: {
           result: response.data,
-          quizTitle: quiz?.title 
-        } 
+          quizTitle: quiz?.title
+        }
       })
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to submit quiz')
@@ -117,7 +116,7 @@ export default function StudentQuizPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <p className="text-red-600 mb-4">{error}</p>
-        <button 
+        <button
           onClick={() => navigate('/student/courses')}
           className="px-4 py-2 bg-blue-600 text-white rounded"
         >
@@ -138,7 +137,7 @@ export default function StudentQuizPage() {
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h1 className="text-2xl font-bold mb-2">{quiz.title}</h1>
-        
+
         <div className="flex justify-between items-center text-sm text-gray-600">
           <span>{totalQuestions} questions</span>
           {timeRemaining !== null && (
@@ -147,9 +146,9 @@ export default function StudentQuizPage() {
             </span>
           )}
         </div>
-        
+
         <div className="mt-4 bg-gray-200 rounded-full h-2">
-          <div 
+          <div
             className="bg-blue-600 h-2 rounded-full transition-all"
             style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
           />
@@ -175,11 +174,10 @@ export default function StudentQuizPage() {
         <button
           onClick={handleSubmit}
           disabled={submitting || answeredCount < totalQuestions}
-          className={`px-6 py-3 rounded-lg font-medium ${
-            submitting || answeredCount < totalQuestions
+          className={`px-6 py-3 rounded-lg font-medium ${submitting || answeredCount < totalQuestions
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
+            }`}
         >
           {submitting ? 'Submitting...' : 'Submit Quiz'}
         </button>

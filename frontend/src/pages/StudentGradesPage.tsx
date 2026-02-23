@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { api } from '../services/api'
+import api from '../services/api'
 
 interface GradeRecord {
   quizId: string
@@ -15,11 +15,11 @@ export default function StudentGradesPage() {
   const location = useLocation()
   const [grades, setGrades] = useState<GradeRecord[]>([])
   const [loading, setLoading] = useState(true)
-  const [recentResult, setRecentResult] = useState<any>(location.state?.result)
+  const recentResult: GradeRecord | null = location.state?.result ?? null
 
   useEffect(() => {
-    api.get('/student/grades')
-      .then(res => setGrades(res.data))
+    api.get<GradeRecord[]>('/student/grades')
+      .then((res) => setGrades(res.data))
       .finally(() => setLoading(false))
   }, [])
 
@@ -112,7 +112,7 @@ export default function StudentGradesPage() {
           <div className="bg-white rounded-lg shadow p-4 text-center">
             <p className="text-sm text-gray-600">Average Score</p>
             <p className="text-2xl font-bold">
-              {grades.length > 0 
+              {grades.length > 0
                 ? Math.round(grades.reduce((acc, g) => acc + getPercentage(g.score, g.maxScore), 0) / grades.length)
                 : 0}%
             </p>
