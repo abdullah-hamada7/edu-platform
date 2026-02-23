@@ -73,7 +73,7 @@ public class AdminCourseService {
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> ResourceNotFoundException.of("Course", courseId));
         
-        int position = dto.getPosition() != null ? dto.getPosition() : (int) chapterRepository.countByCourseId(courseId);
+        int position = dto.getPosition() != null ? dto.getPosition() : chapterRepository.findNextPosition(courseId);
         
         Chapter chapter = Chapter.builder()
             .courseId(courseId)
@@ -101,7 +101,7 @@ public class AdminCourseService {
                 .orElseThrow(() -> ResourceNotFoundException.of("VideoAsset", dto.getVideoAssetId()));
         }
         
-        int position = dto.getPosition() != null ? dto.getPosition() : (int) lessonRepository.countByChapterId(chapterId);
+        int position = dto.getPosition() != null ? dto.getPosition() : lessonRepository.findNextPosition(chapterId);
         
         Lesson lesson = Lesson.builder()
             .chapterId(chapterId)

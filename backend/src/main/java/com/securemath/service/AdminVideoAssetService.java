@@ -42,7 +42,7 @@ public class AdminVideoAssetService {
             .rawObjectKey(rawKey)
             .hlsManifestKey(s3StorageService.getHlsManifestKey(assetId))
             .encryptionKeyRef(hlsEncryptionService.generateEncryptionKeyRef(assetId))
-            .transcodeStatus(TranscodeStatus.PROCESSING)
+            .transcodeStatus(TranscodeStatus.READY)
             .build();
 
         VideoAsset saved = videoAssetRepository.save(asset);

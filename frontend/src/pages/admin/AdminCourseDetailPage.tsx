@@ -303,9 +303,7 @@ export default function AdminCourseDetailPage() {
     formData.append('file', uploadFile)
     try {
       setUploading(true)
-      await api.post('/admin/videos/upload', formData, {
-        headers: {},
-      })
+      await api.post('/admin/videos/upload', formData)
       setUploadFile(null)
       setError(null)
       refreshVideoAssets()

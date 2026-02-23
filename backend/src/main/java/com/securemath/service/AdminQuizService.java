@@ -69,7 +69,7 @@ public class AdminQuizService {
         Quiz quiz = quizRepository.findById(quizId)
             .orElseThrow(() -> ResourceNotFoundException.of("Quiz", quizId));
 
-        int position = dto.getPosition() != null ? dto.getPosition() : (int) questionRepository.countByQuizId(quizId);
+        int position = dto.getPosition() != null ? dto.getPosition() : questionRepository.findNextPosition(quizId);
 
         Question question = Question.builder()
             .quizId(quiz.getId())
