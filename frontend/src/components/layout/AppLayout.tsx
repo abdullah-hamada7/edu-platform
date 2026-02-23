@@ -25,7 +25,10 @@ const NAV_ITEMS: NavItem[] = [
     { label: 'Dashboard', href: '/student', icon: LayoutDashboard, roles: ['STUDENT'] },
     { label: 'My Courses', href: '/student/courses', icon: BookOpen, roles: ['STUDENT'] },
     { label: 'My Grades', href: '/student/grades', icon: GraduationCap, roles: ['STUDENT'] },
-    { label: 'Admin Dashboard', href: '/admin/courses', icon: LayoutDashboard, roles: ['ADMIN'] },
+    { label: 'Admin Dashboard', href: '/admin', icon: LayoutDashboard, roles: ['ADMIN'] },
+    { label: 'Courses', href: '/admin/courses', icon: BookOpen, roles: ['ADMIN'] },
+    { label: 'Users', href: '/admin/users', icon: User, roles: ['ADMIN'] },
+    { label: 'Analytics', href: '/admin/analytics', icon: Bell, roles: ['ADMIN'] },
 ]
 
 export default function AppLayout() {

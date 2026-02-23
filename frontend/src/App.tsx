@@ -4,6 +4,7 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import AdminCoursesPage from './pages/admin/AdminCoursesPage'
 import AdminCourseDetailPage from './pages/admin/AdminCourseDetailPage'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
+import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import StudentDashboardPage from './pages/StudentDashboardPage'
 import StudentLessonPage from './pages/StudentLessonPage'
 import StudentQuizPage from './pages/StudentQuizPage'
@@ -24,7 +25,7 @@ function App() {
         <Route path="/admin/courses" element={<AdminCoursesPage />} />
         <Route path="/admin/courses/:courseId" element={<AdminCourseDetailPage />} />
         <Route path="/admin/users" element={<AdminUsersPage />} />
-        <Route path="/admin/analytics" element={<Navigate to="/admin" replace />} />
+        <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
 
         {/* Student Routes */}
         <Route path="/student" element={<StudentDashboardPage />} />

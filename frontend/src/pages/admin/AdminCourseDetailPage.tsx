@@ -53,12 +53,19 @@ interface QuizSummary {
   status: string
 }
 
+interface VideoAsset {
+  id: string
+  transcodeStatus: string
+  hlsManifestKey?: string
+}
+
 export default function AdminCourseDetailPage() {
   const { courseId } = useParams<{ courseId: string }>()
   const [course, setCourse] = useState<CourseDetail | null>(null)
   const [students, setStudents] = useState<User[]>([])
   const [enrollments, setEnrollments] = useState<Enrollment[]>([])
   const [quizzes, setQuizzes] = useState<QuizSummary[]>([])
+  const [videoAssets, setVideoAssets] = useState<VideoAsset[]>([])
   const [loading, setLoading] = useState(true)
 
   const [chapterTitle, setChapterTitle] = useState('')
@@ -67,6 +74,8 @@ export default function AdminCourseDetailPage() {
   const [lessonTitle, setLessonTitle] = useState('')
   const [lessonPosition, setLessonPosition] = useState('')
   const [lessonVideoAssetId, setLessonVideoAssetId] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const [uploadFile, setUploadFile] = useState<File | null>(null)
 
   const [selectedStudentId, setSelectedStudentId] = useState('')
   const [quizTitle, setQuizTitle] = useState('')
@@ -91,12 +100,14 @@ export default function AdminCourseDetailPage() {
       api.get<Enrollment[]>(`/admin/courses/${courseId}/enrollments`),
       api.get<User[]>('/admin/users'),
       api.get<QuizSummary[]>(`/admin/courses/${courseId}/quizzes`),
+      api.get<VideoAsset[]>('/admin/videos'),
     ])
-      .then(([courseRes, enrollmentRes, usersRes, quizzesRes]) => {
+      .then(([courseRes, enrollmentRes, usersRes, quizzesRes, videosRes]) => {
         setCourse(courseRes.data)
         setEnrollments(enrollmentRes.data)
         setStudents(usersRes.data.filter(u => u.role === 'STUDENT'))
         setQuizzes(quizzesRes.data)
+        setVideoAssets(videosRes.data)
       })
       .finally(() => setLoading(false))
   }, [courseId])
@@ -117,6 +128,11 @@ export default function AdminCourseDetailPage() {
     if (!courseId) return
     const response = await api.get<QuizSummary[]>(`/admin/courses/${courseId}/quizzes`)
     setQuizzes(response.data)
+  }
+
+  const refreshVideoAssets = async () => {
+    const response = await api.get<VideoAsset[]>('/admin/videos')
+    setVideoAssets(response.data)
   }
 
   const handleCreateChapter = async (event: React.FormEvent) => {
@@ -216,6 +232,28 @@ export default function AdminCourseDetailPage() {
     refreshQuizzes()
   }
 
+  const handleUploadVideo = async (event: React.FormEvent) => {
+    event.preventDefault()
+    if (!uploadFile) return
+    const formData = new FormData()
+    formData.append('file', uploadFile)
+    try {
+      setUploading(true)
+      await api.post('/admin/videos/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      setUploadFile(null)
+      refreshVideoAssets()
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleRefreshVideo = async (assetId: string) => {
+    await api.post(`/admin/videos/${assetId}/refresh`)
+    refreshVideoAssets()
+  }
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -254,6 +292,52 @@ export default function AdminCourseDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-6">
+          <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
+            <h2 className="text-lg font-black text-white flex items-center gap-2"><BookOpen size={18} className="text-primary" /> Video Assets</h2>
+            <form onSubmit={handleUploadVideo} className="flex flex-col md:flex-row gap-3">
+              <input
+                type="file"
+                accept="video/*"
+                onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200"
+              />
+              <button
+                type="submit"
+                disabled={!uploadFile || uploading}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-60"
+              >
+                {uploading ? 'Uploading...' : 'Upload'}
+              </button>
+            </form>
+            <div className="space-y-2">
+              {videoAssets.length === 0 ? (
+                <p className="text-xs text-slate-500">No video assets uploaded yet.</p>
+              ) : (
+                videoAssets.map(asset => (
+                  <div key={asset.id} className="flex items-center justify-between text-xs text-slate-300 bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-2">
+                    <div>
+                      <p className="font-bold">{asset.id}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-slate-500">{asset.transcodeStatus}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setLessonVideoAssetId(asset.id)}
+                        className="px-2 py-1 rounded-lg bg-primary/20 text-primary text-[10px] font-black uppercase"
+                      >
+                        Use
+                      </button>
+                      <button
+                        onClick={() => handleRefreshVideo(asset.id)}
+                        className="px-2 py-1 rounded-lg bg-slate-800 text-slate-300 text-[10px] font-black uppercase"
+                      >
+                        Refresh
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
           <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
             <h2 className="text-lg font-black text-white flex items-center gap-2"><BookOpen size={18} className="text-primary" /> Add Chapter</h2>
             <form onSubmit={handleCreateChapter} className="grid grid-cols-1 md:grid-cols-3 gap-4">
