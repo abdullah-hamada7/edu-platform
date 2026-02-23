@@ -36,7 +36,8 @@ public class Enrollment {
     private Course course;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false, columnDefinition = "enrollment_status")
     @Builder.Default
     private EnrollmentStatus status = EnrollmentStatus.ACTIVE;
 

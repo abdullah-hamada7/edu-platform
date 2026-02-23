@@ -65,6 +65,33 @@ public class ApiExceptionHandler {
             .build());
     }
 
+    @ExceptionHandler(com.securemath.exception.ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(com.securemath.exception.ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder()
+            .timestamp(Instant.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error(ex.getMessage())
+            .build());
+    }
+
+    @ExceptionHandler(com.securemath.exception.DeviceLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleDeviceLimitExceeded(com.securemath.exception.DeviceLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.builder()
+            .timestamp(Instant.now())
+            .status(HttpStatus.FORBIDDEN.value())
+            .error(ex.getMessage())
+            .build());
+    }
+
+    @ExceptionHandler(com.securemath.exception.EnrollmentRequiredException.class)
+    public ResponseEntity<ErrorResponse> handleEnrollmentRequired(com.securemath.exception.EnrollmentRequiredException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.builder()
+            .timestamp(Instant.now())
+            .status(HttpStatus.FORBIDDEN.value())
+            .error(ex.getMessage())
+            .build());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.builder()

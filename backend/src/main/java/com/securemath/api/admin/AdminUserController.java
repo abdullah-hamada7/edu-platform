@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
@@ -33,7 +35,7 @@ public class AdminUserController {
     @PatchMapping("/{userId}/status")
     public ResponseEntity<UserAccount> updateStatus(
             @PathVariable UUID userId,
-            @RequestBody AccountStatusDto dto) {
+            @Valid @RequestBody AccountStatusDto dto) {
         UserAccount user = userAccountRepository.findById(userId)
             .orElseThrow(() -> ResourceNotFoundException.of("User", userId));
         

@@ -31,7 +31,8 @@ public class VideoAsset {
     private String encryptionKeyRef;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transcode_status", nullable = false)
+    @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
+    @Column(name = "transcode_status", nullable = false, columnDefinition = "transcode_status")
     @Builder.Default
     private TranscodeStatus transcodeStatus = TranscodeStatus.PENDING;
 

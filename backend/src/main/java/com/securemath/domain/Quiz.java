@@ -36,7 +36,8 @@ public class Quiz {
     private String title;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false, columnDefinition = "quiz_status")
     @Builder.Default
     private QuizStatus status = QuizStatus.DRAFT;
 

@@ -30,7 +30,8 @@ public class Course {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false, columnDefinition = "course_status")
     @Builder.Default
     private CourseStatus status = CourseStatus.DRAFT;
 

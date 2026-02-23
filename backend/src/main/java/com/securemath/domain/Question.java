@@ -31,7 +31,8 @@ public class Question {
     private Quiz quiz;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false, columnDefinition = "question_type")
     private QuestionType type;
 
     @Column(name = "prompt_text", nullable = false, columnDefinition = "TEXT")
