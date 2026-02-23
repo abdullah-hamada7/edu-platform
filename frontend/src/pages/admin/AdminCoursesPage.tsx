@@ -6,8 +6,7 @@ import {
     MoreVertical,
     BookOpen,
     Layers,
-    ChevronRight,
-    Filter
+    ChevronRight
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 

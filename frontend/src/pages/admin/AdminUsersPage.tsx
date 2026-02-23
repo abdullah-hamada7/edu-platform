@@ -4,10 +4,6 @@ import {
     UserPlus,
     Search,
     MoreVertical,
-    Shield,
-    Mail,
-    ChevronRight,
-    Filter,
     UserCheck,
     Ban
 } from 'lucide-react'
