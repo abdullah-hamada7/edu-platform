@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ class QuizGradingServiceTest {
             .type(QuestionType.MCQ)
             .promptText("What is 2 + 2?")
             .answerKey("{\"correctIndex\":2,\"options\":[\"3\",\"4\",\"5\",\"6\"]}")
-            .points(10.0)
+            .points(BigDecimal.valueOf(10.0))
             .position(0)
             .build();
 
@@ -55,7 +56,7 @@ class QuizGradingServiceTest {
             .type(QuestionType.TRUE_FALSE)
             .promptText("The earth is flat")
             .answerKey("{\"value\":false}")
-            .points(5.0)
+            .points(BigDecimal.valueOf(5.0))
             .position(1)
             .build();
 
@@ -65,7 +66,7 @@ class QuizGradingServiceTest {
             .type(QuestionType.NUMERIC)
             .promptText("What is pi to 2 decimal places?")
             .answerKey("{\"value\":3.14,\"tolerance\":0.01}")
-            .points(15.0)
+            .points(BigDecimal.valueOf(15.0))
             .position(2)
             .build();
 
@@ -83,8 +84,8 @@ class QuizGradingServiceTest {
 
         QuizGradingService.GradingResult result = gradingService.gradeSubmission(quizId, answers);
 
-        assertEquals(30.0, result.score());
-        assertEquals(30.0, result.maxScore());
+        assertEquals(0, BigDecimal.valueOf(30.0).compareTo(result.score()));
+        assertEquals(0, BigDecimal.valueOf(30.0).compareTo(result.maxScore()));
         assertTrue(result.gradingLatencyMs() >= 0);
         assertEquals(3, result.answers().size());
         
@@ -103,8 +104,8 @@ class QuizGradingServiceTest {
 
         QuizGradingService.GradingResult result = gradingService.gradeSubmission(quizId, answers);
 
-        assertEquals(20.0, result.score());
-        assertEquals(30.0, result.maxScore());
+        assertEquals(0, BigDecimal.valueOf(20.0).compareTo(result.score()));
+        assertEquals(0, BigDecimal.valueOf(30.0).compareTo(result.maxScore()));
         
         assertFalse(result.answers().get(0).isCorrect());
         assertTrue(result.answers().get(1).isCorrect());

@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -113,7 +114,7 @@ class PerformanceIT {
             .promptText("What is 2 + 2?")
             .type(QuestionType.MCQ)
             .answerKey("{\"correct\": \"4\", \"options\": [\"3\", \"4\", \"5\", \"6\"]}")
-            .points(10.0)
+            .points(BigDecimal.valueOf(10.0))
             .position(0)
             .build();
         questionId = questionRepository.save(question).getId();

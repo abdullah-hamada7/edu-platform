@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -99,7 +100,7 @@ class QuizSubmissionIT {
             .type(QuestionType.MCQ)
             .promptText("What is 2 + 2?")
             .answerKey("{\"correctIndex\":1,\"options\":[\"3\",\"4\",\"5\"]}")
-            .points(10.0)
+            .points(BigDecimal.valueOf(10.0))
             .position(0)
             .build();
         questionId = questionRepository.save(question).getId();
