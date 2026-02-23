@@ -143,9 +143,6 @@ export default function AdminCoursesPage() {
                     <button className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition-colors border border-slate-700">
                         <Filter size={18} />
                     </button>
-                    <button className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition-colors border border-slate-700">
-                        <Settings size={18} />
-                    </button>
                 </div>
             </div>
 

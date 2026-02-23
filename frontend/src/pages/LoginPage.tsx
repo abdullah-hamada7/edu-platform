@@ -69,12 +69,13 @@ export default function LoginPage() {
       if (response.mustChangePassword) {
         setMustChangePassword(true)
       } else if (response.role === 'ADMIN') {
-        navigate('/admin/courses')
+        navigate('/admin')
       } else {
         navigate('/student/courses')
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid email or password. Please try again.')
+      const serverMessage = err.response?.data?.error || err.response?.data?.message || err.response?.data
+      setError(serverMessage || 'Invalid email or password. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -91,12 +92,13 @@ export default function LoginPage() {
 
       const role = localStorage.getItem('userRole')
       if (role === 'ADMIN') {
-        navigate('/admin/courses')
+        navigate('/admin')
       } else {
         navigate('/student/courses')
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to change password. Requirements: 8+ chars.')
+      const serverMessage = err.response?.data?.error || err.response?.data?.message || err.response?.data
+      setError(serverMessage || 'Failed to change password. Requirements: 8+ chars.')
     } finally {
       setLoading(false)
     }
@@ -185,7 +187,7 @@ export default function LoginPage() {
                   <input type="checkbox" className="rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary/20" />
                   Remember me
                 </label>
-                <a href="#" className="text-primary hover:underline font-medium">Forgot password?</a>
+                <a href="mailto:support@securemath.local" className="text-primary hover:underline font-medium">Forgot password?</a>
               </div>
 
               <AuthButton loading={loading}>

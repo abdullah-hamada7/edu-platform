@@ -40,9 +40,9 @@ export default function StudentCoursesPage() {
           </div>
           <h2 className="text-xl font-bold text-white">No courses yet</h2>
           <p className="text-slate-400 max-w-xs mx-auto">You are not enrolled in any courses. Explore the catalog to get started!</p>
-          <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-semibold hover:opacity-90 transition-all">
-            Browse Catalog
-          </button>
+          <Link to="/student" className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-semibold hover:opacity-90 transition-all">
+            Back to Dashboard
+          </Link>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

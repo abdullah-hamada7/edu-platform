@@ -87,12 +87,12 @@ export default function AdminDashboardPage() {
           <p className="text-slate-400">System-wide overview and infrastructure management.</p>
         </div>
         <div className="flex gap-3">
-          <button className="px-4 py-2 bg-slate-800 text-white rounded-xl text-sm font-bold border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2">
+          <Link to="/admin/analytics" className="px-4 py-2 bg-slate-800 text-white rounded-xl text-sm font-bold border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2">
             <History size={16} /> Audit Logs
-          </button>
-          <button className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-black transition-all flex items-center gap-2 shadow-lg shadow-primary/20">
+          </Link>
+          <Link to="/admin/courses" className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-black transition-all flex items-center gap-2 shadow-lg shadow-primary/20">
             <Plus size={16} /> New Resource
-          </button>
+          </Link>
         </div>
       </div>
 

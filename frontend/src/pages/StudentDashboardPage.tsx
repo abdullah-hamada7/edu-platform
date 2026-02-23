@@ -208,9 +208,9 @@ export default function StudentDashboardPage() {
           <Award size={48} className="text-primary mb-2 group-hover:scale-110 transition-transform duration-500" />
           <h4 className="text-xl font-black text-white relative">Academic Excellence Award</h4>
           <p className="text-slate-400 text-sm max-w-xs relative">High-performance metrics detected. Keep up the cognitive trajectory for platform recognition.</p>
-          <button className="px-6 py-2 bg-primary text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 relative">
+          <Link to="/student/grades" className="px-6 py-2 bg-primary text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 relative">
             Registry Profile
-          </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ import {
     Ban
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
+import { Link } from 'react-router-dom'
 
 interface User {
     id: string
@@ -19,6 +20,11 @@ interface User {
     role: string
     status: string
     mustChangePassword?: boolean
+}
+
+interface Course {
+    id: string
+    title: string
 }
 
 export default function AdminUsersPage() {
@@ -30,10 +36,20 @@ export default function AdminUsersPage() {
     const [tempPassword, setTempPassword] = useState('')
     const [role, setRole] = useState('STUDENT')
     const [saving, setSaving] = useState(false)
+    const [courses, setCourses] = useState<Course[]>([])
+    const [enrollUser, setEnrollUser] = useState<User | null>(null)
+    const [selectedCourseId, setSelectedCourseId] = useState('')
+    const [enrolling, setEnrolling] = useState(false)
 
     useEffect(() => {
-        api.get<User[]>('/admin/users')
-            .then(res => setUsers(res.data))
+        Promise.all([
+            api.get<User[]>('/admin/users'),
+            api.get<Course[]>('/admin/courses'),
+        ])
+            .then(([usersRes, coursesRes]) => {
+                setUsers(usersRes.data)
+                setCourses(coursesRes.data)
+            })
             .catch(err => console.error('Failed to fetch admin users:', err))
             .finally(() => setLoading(false))
     }, [])
@@ -42,6 +58,23 @@ export default function AdminUsersPage() {
         api.get<User[]>('/admin/users')
             .then(res => setUsers(res.data))
             .catch(err => console.error('Failed to fetch admin users:', err))
+    }
+
+    const handleEnroll = async (event: React.FormEvent) => {
+        event.preventDefault()
+        if (!enrollUser || !selectedCourseId) return
+        try {
+            setEnrolling(true)
+            await api.post(`/admin/courses/${selectedCourseId}/enrollments`, {
+                studentId: enrollUser.id,
+            })
+            setEnrollUser(null)
+            setSelectedCourseId('')
+        } catch (err) {
+            console.error('Failed to enroll student:', err)
+        } finally {
+            setEnrolling(false)
+        }
     }
 
     const handleCreateUser = async (event: React.FormEvent) => {
@@ -162,6 +195,50 @@ export default function AdminUsersPage() {
                 </form>
             )}
 
+            {enrollUser && (
+                <form
+                    onSubmit={handleEnroll}
+                    className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4"
+                >
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Enroll Student</p>
+                            <p className="text-sm text-slate-200">{enrollUser.email}</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setEnrollUser(null)}
+                            className="text-xs text-slate-500 hover:text-slate-200"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Course</label>
+                            <select
+                                value={selectedCourseId}
+                                onChange={(e) => setSelectedCourseId(e.target.value)}
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-sm text-slate-200"
+                                required
+                            >
+                                <option value="">Select course</option>
+                                {courses.map(course => (
+                                    <option key={course.id} value={course.id}>{course.title}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={enrolling}
+                            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 disabled:opacity-60"
+                        >
+                            {enrolling ? 'Enrolling...' : 'Enroll'}
+                        </button>
+                    </div>
+                </form>
+            )}
+
             {/* Control Bar */}
             <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-slate-900/40 border border-slate-800 p-4 rounded-2xl">
                 <div className="relative w-full sm:max-w-xs">
@@ -234,7 +311,11 @@ export default function AdminUsersPage() {
                                     </td>
                                     <td className="px-6 py-5 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all" title="Enroll in Course">
+                                            <button
+                                                onClick={() => setEnrollUser(user)}
+                                                className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all"
+                                                title="Enroll in Course"
+                                            >
                                                 <UserCheck size={18} />
                                             </button>
                                             <button
@@ -244,9 +325,12 @@ export default function AdminUsersPage() {
                                             >
                                                 <Ban size={18} />
                                             </button>
-                                            <button className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-white hover:bg-slate-700 transition-all">
+                                            <Link
+                                                to="/admin/courses"
+                                                className="p-2 rounded-lg bg-slate-800/50 text-slate-500 hover:text-white hover:bg-slate-700 transition-all"
+                                            >
                                                 <MoreVertical size={18} />
-                                            </button>
+                                            </Link>
                                         </div>
                                     </td>
                                 </tr>
