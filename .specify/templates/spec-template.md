@@ -95,6 +95,30 @@
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
 - **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
+### Security and Compliance Requirements *(mandatory when backend, auth, or media is in scope)*
+
+- **SEC-001**: APIs MUST require authentication by default; any public endpoint MUST be explicitly
+  listed with rationale.
+- **SEC-002**: Authorization MUST enforce strict `Admin` and `Student` RBAC boundaries server-side.
+- **SEC-003**: Client-side checks MUST NOT be treated as enforcement; backend validation MUST be
+  authoritative.
+- **SEC-004**: Video delivery MUST use encrypted HLS (AES-128), signed URLs with expiration,
+  server-side device fingerprint enforcement, and dynamic watermarking.
+- **SEC-005**: Relational data persistence MUST use PostgreSQL foreign keys; soft deletes are
+  disallowed unless explicitly required.
+- **SEC-006**: Passwords MUST be stored and verified using BCrypt only.
+- **SEC-007**: Backend authentication MUST use JWT-based stateless flows only.
+
+### Performance and Quality Requirements *(mandatory when user-facing latency or backend logic is in scope)*
+
+- **PERF-001**: Video start time MUST remain below 2 seconds under defined target conditions.
+- **PERF-002**: The platform MUST support at least 500 concurrent student sessions.
+- **PERF-003**: Quiz grading MUST be synchronous and complete in under 300ms per submission.
+- **QUAL-001**: Backend architecture MUST follow `Controller -> Service -> Repository` layering.
+- **QUAL-002**: DTO mapping MUST be explicit between layers and API/domain boundaries.
+- **QUAL-003**: Service-layer business logic MUST include unit test coverage.
+- **QUAL-004**: Security boundaries MUST include integration test coverage.
+
 ### Key Entities *(include if feature involves data)*
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]

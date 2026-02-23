@@ -1,0 +1,291 @@
+openapi: 3.1.0
+info:
+  title: Secure Math Platform API
+  version: 1.0.0
+  description: Contract for admin and student APIs with strict role segregation.
+servers:
+  - url: https://api.securemath.local
+security:
+  - bearerAuth: []
+paths:
+  /api/auth/login:
+    post:
+      summary: Authenticate user and issue JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication succeeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+  /api/admin/courses:
+    post:
+      summary: Create course (Admin only)
+      tags: [Admin]
+      responses:
+        '201':
+          description: Course created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+    get:
+      summary: List courses (Admin only)
+      tags: [Admin]
+      responses:
+        '200':
+          description: Course list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+
+  /api/admin/courses/{courseId}/enrollments:
+    post:
+      summary: Enroll student in course (Admin only)
+      tags: [Admin]
+      parameters:
+        - $ref: '#/components/parameters/CourseId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentRequest'
+      responses:
+        '201':
+          description: Enrollment created
+
+  /api/admin/users/{userId}/status:
+    patch:
+      summary: Activate or deactivate account (Admin only)
+      tags: [Admin]
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [ACTIVE, INACTIVE]
+      responses:
+        '200':
+          description: Status updated
+
+  /api/student/courses:
+    get:
+      summary: List enrolled courses (Student only)
+      tags: [Student]
+      responses:
+        '200':
+          description: Enrolled course list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+
+  /api/student/lessons/{lessonId}/playback-grant:
+    post:
+      summary: Request signed playback URL (Student only)
+      tags: [Student]
+      parameters:
+        - $ref: '#/components/parameters/LessonId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaybackGrantRequest'
+      responses:
+        '200':
+          description: Signed playback grant issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaybackGrantResponse'
+        '403':
+          description: Enrollment, device, or policy denial
+
+  /api/student/quizzes/{quizId}/submit:
+    post:
+      summary: Submit quiz attempt and receive synchronous grade
+      tags: [Student]
+      parameters:
+        - $ref: '#/components/parameters/QuizId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizSubmissionRequest'
+      responses:
+        '200':
+          description: Graded result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSubmissionResponse'
+
+  /api/student/grades:
+    get:
+      summary: View student's own grades
+      tags: [Student]
+      responses:
+        '200':
+          description: Grade history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GradeRecord'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CourseId:
+      name: courseId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    LessonId:
+      name: lessonId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    QuizId:
+      name: quizId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      required: [accessToken, role]
+      properties:
+        accessToken:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, STUDENT]
+    Course:
+      type: object
+      required: [id, title]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+    EnrollmentRequest:
+      type: object
+      required: [studentId]
+      properties:
+        studentId:
+          type: string
+          format: uuid
+    PlaybackGrantRequest:
+      type: object
+      required: [deviceFingerprint]
+      properties:
+        deviceFingerprint:
+          type: string
+    PlaybackGrantResponse:
+      type: object
+      required: [manifestUrl, expiresAt, watermarkSeed]
+      properties:
+        manifestUrl:
+          type: string
+          format: uri
+        expiresAt:
+          type: string
+          format: date-time
+        watermarkSeed:
+          type: string
+    QuizSubmissionRequest:
+      type: object
+      required: [answers]
+      properties:
+        answers:
+          type: array
+          items:
+            type: object
+            required: [questionId, response]
+            properties:
+              questionId:
+                type: string
+                format: uuid
+              response:
+                type: string
+    QuizSubmissionResponse:
+      type: object
+      required: [attemptId, score, maxScore, gradingLatencyMs]
+      properties:
+        attemptId:
+          type: string
+          format: uuid
+        score:
+          type: number
+        maxScore:
+          type: number
+        gradingLatencyMs:
+          type: integer
+    GradeRecord:
+      type: object
+      required: [quizId, score, maxScore, submittedAt]
+      properties:
+        quizId:
+          type: string
+          format: uuid
+        score:
+          type: number
+        maxScore:
+          type: number
+        submittedAt:
+          type: string
+          format: date-time

@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: secure-math-platform
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/securemath
+    username: ${DB_USERNAME:securemath}
+    password: ${DB_PASSWORD:securemath123}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: public
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+jwt:
+  secret: ${JWT_SECRET:change-me-in-production-min-256-bits}
+  expiry-hours: ${JWT_EXPIRY_HOURS:24}
+
+app:
+  initial-admin-password: ${APP_INITIAL_ADMIN_PASSWORD:Admin123!}
+  device-limit: ${DEVICE_LIMIT:2}
+  signed-url-expiry-hours: ${SIGNED_URL_EXPIRY_HOURS:2}
+
+aws:
+  region: ${AWS_REGION:us-east-1}
+  s3:
+    bucket-name: ${S3_BUCKET_NAME:securemath-media}
+
+server:
+  port: 8080
+  forward-headers-strategy: native
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    com.securemath: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG

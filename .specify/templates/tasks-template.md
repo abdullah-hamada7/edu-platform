@@ -68,6 +68,17 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T007 Create base models/entities that all stories depend on
 - [ ] T008 Configure error handling and logging infrastructure
 - [ ] T009 Setup environment configuration management
+- [ ] T010 [P] Enforce authenticated-by-default API policy and explicit public-route exceptions
+- [ ] T011 [P] Implement strict `Admin`/`Student` RBAC policy checks in backend authorization layer
+- [ ] T012 [P] Configure BCrypt password hashing and verification utilities
+- [ ] T013 [P] Enforce PostgreSQL foreign key constraints in schema and migration checks
+- [ ] T014 [P] Implement JWT-only stateless auth middleware (no server-side session identity)
+- [ ] T015 [P] Implement media protection baseline (AES-128 HLS, signed URLs, fingerprint checks,
+  dynamic watermarking) when feature includes video delivery
+- [ ] T016 [P] Define and instrument performance benchmarks for video start latency, concurrency,
+  and synchronous quiz grading latency
+- [ ] T017 [P] Establish layered backend structure (`Controller -> Service -> Repository`) and DTO
+  mapping conventions
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -156,6 +167,9 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
+- [ ] TXXX Verify constitution compliance evidence for auth, RBAC, media protection, and data integrity
+- [ ] TXXX Validate performance targets (<2s video start, 500 concurrent students, <300ms quiz grading)
+- [ ] TXXX Ensure service-layer unit tests and security-boundary integration tests are complete
 
 ---
 

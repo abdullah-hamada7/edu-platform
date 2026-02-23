@@ -1,0 +1,104 @@
+# ##############################################################################
+# Universal / OS Metadata
+# ##############################################################################
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*.bak
+*.orig
+*~
+.nfs*
+
+# ##############################################################################
+# IDEs & Text Editors
+# ##############################################################################
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.factorypath
+.nb-gradle/
+
+# ##############################################################################
+# Java / Spring Boot / Maven
+# ##############################################################################
+**/target/
+**/*.class
+**/*.jar
+**/*.war
+**/*.ear
+**/*.zip
+**/*.tar.gz
+**/*.rar
+**/build/
+.gradle/
+bin/
+help.md
+.mvn/wrapper/maven-wrapper.jar
+
+# ##############################################################################
+# Node.js / TypeScript / React / Vite
+# ##############################################################################
+**/node_modules/
+**/dist/
+**/build-artifacts/
+**/coverage/
+**/*.tsbuildinfo
+.npm/
+.eslintcache
+.stylelintcache
+node_modules.zip
+jspm_packages/
+.pnp/
+.pnp.js
+
+# Lock files: keep them for consistency unless you have a strong reason not to
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ##############################################################################
+# Terraform
+# ##############################################################################
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/crash.log
+**/override.tf
+**/override.tf.json
+**/_override.tf
+**/_override.tf.json
+**/.terraformrc
+**/terraform.rc
+**/*.tfvars
+**/*.tfvars.json
+
+# ##############################################################################
+# Docker & Infrastructure
+# ##############################################################################
+**/*.log
+**/docker-compose.override.yml
+**/infra/nginx/ssl/*
+!**/infra/nginx/ssl/.gitkeep
+
+# ##############################################################################
+# Environment & Secrets (CRITICAL)
+# ##############################################################################
+.env
+.env.*
+!.env.example
+!.env.prod.template
+
+# ##############################################################################
+# Testing
+# ##############################################################################
+.nyc_output/
+test-results/
+junit.xml
+
+.agent/

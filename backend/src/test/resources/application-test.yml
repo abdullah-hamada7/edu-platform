@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  flyway:
+    enabled: false
+
+jwt:
+  secret: test-secret-key-for-testing-minimum-256-bits-required-here
+  expiry-hours: 24
+
+app:
+  initial-admin-password: Admin123!
+  device-limit: 2
+  signed-url-expiry-hours: 1
+
+aws:
+  region: us-east-1
+  s3:
+    bucket-name: test-bucket
+
+logging:
+  level:
+    com.securemath: DEBUG

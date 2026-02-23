@@ -1,0 +1,123 @@
+package com.securemath.service;
+
+import com.securemath.domain.*;
+import com.securemath.dto.quiz.*;
+import com.securemath.exception.ResourceNotFoundException;
+import com.securemath.repository.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class StudentQuizService {
+
+    private final QuizRepository quizRepository;
+    private final QuestionRepository questionRepository;
+    private final QuizAttemptRepository attemptRepository;
+    private final AnswerRepository answerRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final QuizGradingService gradingService;
+
+    public QuizDetailDto getQuizForStudent(UUID quizId, UUID studentId) {
+        Quiz quiz = quizRepository.findById(quizId)
+            .orElseThrow(() -> ResourceNotFoundException.of("Quiz", quizId));
+
+        if (!enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(
+                studentId, quiz.getCourseId(), EnrollmentStatus.ACTIVE)) {
+            throw new IllegalStateException("Not enrolled in this course");
+        }
+
+        return toDetailDto(quiz);
+    }
+
+    @Transactional
+    public QuizSubmissionResponseDto submitQuiz(UUID quizId, UUID studentId, QuizSubmissionRequestDto request) {
+        Quiz quiz = quizRepository.findById(quizId)
+            .orElseThrow(() -> ResourceNotFoundException.of("Quiz", quizId));
+
+        if (attemptRepository.existsByQuizIdAndStudentId(quizId, studentId)) {
+            throw new IllegalStateException("Quiz already submitted");
+        }
+
+        QuizGradingService.GradingResult result = gradingService.gradeSubmission(quizId, request.getAnswers());
+
+        QuizAttempt attempt = QuizAttempt.builder()
+            .quizId(quizId)
+            .studentId(studentId)
+            .submittedAt(Instant.now())
+            .score(result.score())
+            .maxScore(result.maxScore())
+            .gradingLatencyMs(result.gradingLatencyMs())
+            .build();
+
+        QuizAttempt savedAttempt = attemptRepository.save(attempt);
+
+        for (QuizGradingService.GradedAnswer ga : result.answers()) {
+            Answer answer = Answer.builder()
+                .attemptId(savedAttempt.getId())
+                .questionId(ga.questionId())
+                .responseValue(ga.responseValue())
+                .isCorrect(ga.isCorrect())
+                .awardedPoints(ga.awardedPoints())
+                .build();
+            answerRepository.save(answer);
+        }
+
+        return QuizSubmissionResponseDto.builder()
+            .attemptId(savedAttempt.getId())
+            .score(savedAttempt.getScore())
+            .maxScore(savedAttempt.getMaxScore())
+            .gradingLatencyMs(savedAttempt.getGradingLatencyMs())
+            .build();
+    }
+
+    public List<GradeRecordDto> getStudentGrades(UUID studentId) {
+        return attemptRepository.findByStudentIdOrderBySubmittedAtDesc(studentId).stream()
+            .map(this::toGradeRecord)
+            .collect(Collectors.toList());
+    }
+
+    private QuizDetailDto toDetailDto(Quiz quiz) {
+        List<QuestionResponseDto> questions = questionRepository.findByQuizIdOrderByPosition(quiz.getId())
+            .stream()
+            .map(this::toQuestionDto)
+            .collect(Collectors.toList());
+
+        return QuizDetailDto.builder()
+            .id(quiz.getId())
+            .courseId(quiz.getCourseId())
+            .title(quiz.getTitle())
+            .timeLimitSeconds(quiz.getTimeLimitSeconds())
+            .questions(questions)
+            .build();
+    }
+
+    private QuestionResponseDto toQuestionDto(Question q) {
+        return QuestionResponseDto.builder()
+            .id(q.getId())
+            .type(q.getType().name())
+            .promptText(q.getPromptText())
+            .latexEnabled(q.getLatexEnabled())
+            .points(q.getPoints())
+            .position(q.getPosition())
+            .build();
+    }
+
+    private GradeRecordDto toGradeRecord(QuizAttempt attempt) {
+        Quiz quiz = quizRepository.findById(attempt.getQuizId()).orElse(null);
+        return GradeRecordDto.builder()
+            .quizId(attempt.getQuizId())
+            .quizTitle(quiz != null ? quiz.getTitle() : null)
+            .score(attempt.getScore())
+            .maxScore(attempt.getMaxScore())
+            .submittedAt(attempt.getSubmittedAt())
+            .gradingLatencyMs(attempt.getGradingLatencyMs())
+            .build();
+    }
+}

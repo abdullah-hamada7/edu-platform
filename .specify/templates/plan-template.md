@@ -31,7 +31,18 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- **Security-First Architecture**: Confirm default-authenticated API design, explicit public endpoint
+  exceptions, and strict `Admin` vs `Student` RBAC mapping.
+- **Content Protection Enforcement**: Confirm encrypted HLS (AES-128), signed URL expiry strategy,
+  server-side device fingerprint validation, and dynamic watermarking approach where media is in scope.
+- **Data Integrity and Consistency**: Confirm PostgreSQL foreign key strategy, hard-delete default
+  policy (unless explicitly exempted), and BCrypt password hashing requirements.
+- **Stateless Backend Design**: Confirm JWT-only auth approach and no server-side session dependency
+  for identity/authz decisions.
+- **Performance Targets**: Confirm design and verification plan for video start time <2s, support for
+  500 concurrent students, and synchronous quiz grading <300ms per submission.
+- **Code Quality Standards**: Confirm layered architecture (`Controller -> Service -> Repository`),
+  explicit DTO mapping, service-layer unit tests, and integration tests for security boundaries.
 
 ## Project Structure
 
