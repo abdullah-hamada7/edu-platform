@@ -22,4 +22,10 @@ public class StudentGradeController {
         UUID studentId = UUID.fromString(userId);
         return ResponseEntity.ok(studentQuizService.getStudentGrades(studentId));
     }
+
+    @GetMapping("/summary")
+    public ResponseEntity<com.securemath.dto.student.StudentDashboardSummaryDto> getDashboardSummary(@AuthenticationPrincipal String userId) {
+        UUID studentId = UUID.fromString(userId);
+        return ResponseEntity.ok(studentQuizService.getDashboardSummary(studentId));
+    }
 }

@@ -17,6 +17,12 @@ import java.util.stream.Collectors;
 public class AdminAnalyticsController {
 
     private final QuizAttemptRepository quizAttemptRepository;
+    private final com.securemath.service.AdminAnalyticsService adminAnalyticsService;
+
+    @GetMapping("/summary")
+    public ResponseEntity<com.securemath.dto.admin.AdminDashboardSummaryDto> getDashboardSummary() {
+        return ResponseEntity.ok(adminAnalyticsService.getDashboardSummary());
+    }
 
     @GetMapping("/quizzes/{quizId}/attempts")
     public ResponseEntity<List<GradeRecordDto>> getQuizAttempts(@PathVariable UUID quizId) {

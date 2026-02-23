@@ -83,6 +83,36 @@ public class StudentQuizService {
             .collect(Collectors.toList());
     }
 
+    public com.securemath.dto.student.StudentDashboardSummaryDto getDashboardSummary(UUID studentId) {
+        List<Enrollment> activeEnrollments = enrollmentRepository.findByStudentIdAndStatus(studentId, EnrollmentStatus.ACTIVE);
+        List<GradeRecordDto> grades = getStudentGrades(studentId);
+        
+        double avgScore = grades.stream()
+            .mapToDouble(g -> (double) g.getScore() / g.getMaxScore())
+            .average()
+            .orElse(0.0) * 100;
+
+        // Calculate weekly progress (quizzes in last 7 days / goal of 5)
+        long recentQuizzes = grades.stream()
+            .filter(g -> g.getSubmittedAt().isAfter(java.time.Instant.now().minus(7, java.time.chrono.ChronoUnit.DAYS)))
+            .count();
+        int progress = (int) Math.min(100, (recentQuizzes * 100) / 5);
+
+        // Calculate rank (rudimentary: if avg > 90 -> Top 5%, else if > 80 -> Top 20%, etc.)
+        String rank = "Initiate";
+        if (avgScore > 90) rank = "Top 5%";
+        else if (avgScore > 80) rank = "Top 20%";
+        else if (avgScore > 50) rank = "Professional";
+
+        return com.securemath.dto.student.StudentDashboardSummaryDto.builder()
+            .activeCoursesCount(activeEnrollments.size())
+            .averageScore(avgScore)
+            .platformRank(rank)
+            .recentActivity(grades.stream().limit(5).collect(Collectors.toList()))
+            .weeklyProgressPercentage(progress)
+            .build();
+    }
+
     private QuizDetailDto toDetailDto(Quiz quiz) {
         List<QuestionResponseDto> questions = questionRepository.findByQuizIdOrderByPosition(quiz.getId())
             .stream()
